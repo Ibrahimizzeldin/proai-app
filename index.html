@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PROAI - Dog Merge Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PROAI DOG MERGE</title>
 
   <!-- Telegram Web App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -14,72 +14,128 @@
 
   <style>
     :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent-color: #f59e0b;
-      --accent-hover: #d97706;
-      --text-color: #f8fafc;
+      --bg-color: #0b0e17;
+      --card-bg: #131826;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-gold: #f59e0b;
+      --accent-gold-light: #fbbf24;
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --green-color: #22c55e;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-color: var(--bg-color);
-      color: var(--text-color);
-      padding: 16px;
-      padding-bottom: 80px;
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 12px;
+      padding-bottom: 84px;
     }
 
-    /* Header Balances */
-    .header-card {
+    /* Top Title Header */
+    .app-header {
       width: 100%;
       max-width: 420px;
-      background: rgba(30, 41, 59, 0.9);
-      border-radius: 16px;
-      padding: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border: 1px solid rgba(245, 158, 11, 0.2);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
-    .balance-box {
+    .app-title {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: var(--text-main);
+      text-transform: uppercase;
+    }
+
+    /* Top Balance Cards Row */
+    .stats-row {
+      width: 100%;
+      max-width: 420px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
 
-    .balance-title {
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent-gold);
+    }
+
+    .stat-value-green {
+      color: var(--accent-green);
+    }
+
+    /* Promo Vault Banner */
+    .vault-banner {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(135deg, #1e1b4b, #311b92);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .vault-info h4 {
       font-size: 13px;
+      color: #c084fc;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .vault-info p {
+      font-size: 11px;
       color: var(--text-muted);
     }
 
-    .balance-amount {
-      font-size: 20px;
-      font-weight: bold;
-      color: var(--accent-color);
+    .vault-btn {
+      background: var(--accent-gold);
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 12px;
     }
 
-    .income-amount {
-      font-size: 14px;
-      color: var(--green-color);
-      font-weight: bold;
-    }
-
-    /* Tabs Container */
+    /* Tab Contents */
     .tab-content {
       display: none;
       width: 100%;
@@ -90,264 +146,393 @@
       display: block;
     }
 
-    /* Grid Area */
+    /* Grid Area (5 Columns x 4 Rows) */
     .grid-container {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
       width: 100%;
-      margin-bottom: 20px;
+      background: #0f1422;
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 10px;
+      margin-bottom: 14px;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);
     }
 
     .grid-slot {
       aspect-ratio: 1;
-      background-color: var(--card-bg);
-      border: 2px dashed rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
+      background: #161c2e;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      cursor: pointer;
       position: relative;
-      transition: all 0.2s;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
     }
 
     .grid-slot.selected {
-      border-color: var(--accent-color);
-      background-color: rgba(245, 158, 11, 0.15);
-      transform: scale(1.03);
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+      transform: scale(1.05);
+      background: #232a3f;
+    }
+
+    .grid-slot.locked {
+      background: rgba(15, 20, 34, 0.6);
+      border-color: rgba(255, 255, 255, 0.02);
     }
 
     .dog-icon {
-      font-size: 42px;
+      font-size: 26px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .dog-lvl-badge {
+      font-size: 9px;
+      font-weight: 800;
+      color: #000;
+      background: var(--accent-gold-light);
+      padding: 1px 5px;
+      border-radius: 6px;
       line-height: 1;
     }
 
-    .dog-level {
-      position: absolute;
-      bottom: 6px;
-      background: var(--accent-color);
-      color: #000;
-      font-size: 11px;
-      font-weight: bold;
-      padding: 2px 8px;
-      border-radius: 10px;
+    .lock-icon {
+      font-size: 14px;
+      opacity: 0.3;
     }
 
-    /* Actions & Controls */
-    .controls-container {
-      display: flex;
-      flex-direction: column;
+    /* Merge Control Actions */
+    .action-controls {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
       gap: 10px;
       width: 100%;
+      margin-bottom: 12px;
     }
 
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
+    .btn-auto {
+      background: linear-gradient(135deg, #6d28d9, #4c1d95);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      color: #fff;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 800;
       cursor: pointer;
-      transition: transform 0.1s, background-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-drop {
+      background: linear-gradient(135deg, #10b981, #047857);
+      border: none;
+      color: #fff;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
       display: flex;
       justify-content: center;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-drop:active, .btn-auto:active {
+      transform: scale(0.97);
+    }
+
+    /* Fusion Ready Status Card */
+    .fusion-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .fusion-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .fusion-text strong {
+      color: var(--text-main);
+      display: block;
+      font-size: 13px;
+    }
+
+    .btn-fusion {
+      background: #fbbf24;
+      color: #000;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 11px;
+    }
+
+    /* Cards Layout for Tasks & Referral */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn-buy {
-      background-color: var(--accent-color);
-      color: #000;
-    }
-
-    .btn-ad {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      color: #fff;
-    }
-
-    .btn:disabled {
-      background: #475569;
-      color: #94a3b8;
-      cursor: not-allowed;
-    }
-
-    /* Cards */
-    .card {
-      background-color: var(--card-bg);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      text-align: center;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
     .card-desc {
+      font-size: 13px;
       color: var(--text-muted);
-      font-size: 14px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+      line-height: 1.4;
     }
 
-    /* Bottom Nav */
+    .btn-task {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .ref-link-box {
+      background: #0f1422;
+      border: 1px dashed var(--accent-gold);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      word-break: break-all;
+      text-align: center;
+      margin-bottom: 12px;
+      color: var(--accent-gold-light);
+    }
+
+    /* Bottom Navigation Bar */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background-color: #1e293b;
+      background: #0d111d;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       justify-content: space-around;
-      padding: 12px 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 0;
       z-index: 100;
     }
 
     .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       color: var(--text-muted);
-      font-size: 13px;
-      font-weight: bold;
+      font-size: 10px;
+      font-weight: 800;
       cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 8px;
+      gap: 4px;
     }
 
     .nav-item.active {
-      color: var(--accent-color);
+      color: var(--accent-gold);
     }
 
-    /* Toast */
+    .nav-icon {
+      font-size: 18px;
+    }
+
+    /* Toast Notification */
     .toast {
       position: fixed;
       top: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--accent-color);
+      background: var(--accent-gold);
       color: #000;
       padding: 10px 20px;
       border-radius: 20px;
-      font-weight: bold;
+      font-size: 13px;
+      font-weight: 800;
       display: none;
       z-index: 1000;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Balance Header -->
-  <div class="header-card">
-    <div class="balance-box">
-      <span class="balance-title">الذهب 🪙</span>
-      <span class="balance-amount" id="coin-balance">0</span>
+  <!-- App Header -->
+  <div class="app-header">
+    <div class="app-title">PROAI DOG MERGE 🐶</div>
+  </div>
+
+  <!-- Top Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-label">الرصيد الكلي 🪙</span>
+      <span class="stat-value" id="coin-balance">100.00</span>
     </div>
-    <div class="balance-box" style="text-align: left;">
-      <span class="balance-title">الأرباح التلقائية ⚡</span>
-      <span class="income-amount" id="sec-income">+0/ثانية</span>
+    <div class="stat-card">
+      <span class="stat-label">معدل التعدين/ساعة ⚡</span>
+      <span class="stat-value stat-value-green" id="hourly-rate">+0.00/ساعة</span>
     </div>
   </div>
 
-  <!-- TAB 1: GAME (DOG MERGE) -->
-  <div id="tab-game" class="tab-content active">
-    <!-- Grid Slots -->
-    <div class="grid-container" id="grid">
-      <!-- 9 Slots dynamically created -->
+  <!-- Vault Event Banner -->
+  <div class="vault-banner">
+    <div class="vault-info">
+      <h4>خزنة الكلاب الذهبية 🚀</h4>
+      <p>ضاعف التعدين بدمج مستويات أعلى</p>
     </div>
+    <button class="vault-btn">نشط</button>
+  </div>
+
+  <!-- TAB 1: MERGE GAME (الدمج) -->
+  <div id="tab-merge" class="tab-content active">
+    <!-- Grid (5x4 = 20 Slots) -->
+    <div class="grid-container" id="grid"></div>
 
     <!-- Actions -->
-    <div class="controls-container">
-      <button class="btn btn-buy" onclick="buyDog()">
-        شراء كلب 🐶 (<span id="buy-price">50</span> 🪙)
+    <div class="action-controls">
+      <button class="btn-auto" onclick="autoMerge()">
+        <span>دمج تلقائي ⚡</span>
       </button>
-      <button class="btn btn-ad" onclick="watchAdForCoins()">
-        مكافأة إعلانية 🎬 (+500 🪙)
+      <button class="btn-drop" onclick="dropDog()">
+        إسقاط كلب (-1 🪙)
       </button>
+    </div>
+
+    <!-- Status Banner -->
+    <div class="fusion-card">
+      <div class="fusion-text">
+        <strong>جاهز للدمج 🐕</strong>
+        <span>اضغط على كلبين من نفس المستوى لدمجهما!</span>
+      </div>
+      <button class="btn-fusion">دمج</button>
     </div>
   </div>
 
-  <!-- TAB 2: REWARDS / ADS -->
-  <div id="tab-rewards" class="tab-content">
+  <!-- TAB 2: TASKS / ADS (المهام والإعلانات) -->
+  <div id="tab-tasks" class="tab-content">
     <div class="card">
-      <div class="card-title">مركز المكافآت والإعلانات 🎁</div>
-      <div class="card-desc">شاهد الإعلانات لدعم اللعبة والحصول على ذهب مضاعف لشراء كلاب نادرة!</div>
-      <button class="btn btn-ad" id="btn-reward-ad" onclick="watchAdForDog()">
-        مشاهدة إعلان والحصول على كلب نادِر 🐕
-      </button>
+      <div class="card-title">إعلان مكافأة مجاني 🎬</div>
+      <div class="card-desc">شاهد إعلاناً قصيراً للحصول على <b>+50 عملة مجانية</b> لشراء المزيد من الكلاب!</div>
+      <button class="btn-task" onclick="watchAdsgramAd()">مشاهدة الإعلان 📺</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">مكافأة التسجيل اليومي 🎁</div>
+      <div class="card-desc">احصل على <b>+20 عملة</b> عند فتح اللعبة يومياً.</div>
+      <button class="btn-task" style="background:#10b981;" onclick="claimDailyReward()">استلام المكافأة 🎉</button>
     </div>
   </div>
 
-  <!-- TAB 3: WALLET -->
+  <!-- TAB 3: REFERRAL (دعوة الأصدقاء) -->
+  <div id="tab-ref" class="tab-content">
+    <div class="card">
+      <div class="card-title">دعوة الأصدقاء 👥</div>
+      <div class="card-desc">احصل على <b>+25 عملة</b> فوراً عن كل صديق تقوم بدعوته للعبة عبر رابطك!</div>
+      <div class="ref-link-box" id="ref-link">جاري تحميل الرابط...</div>
+      <button class="btn-task" style="background:#f59e0b; color:#000;" onclick="copyRefLink()">نسخ رابط الدعوة 📋</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">إحصائيات الإحالة 📊</div>
+      <div class="card-desc">عدد الأصدقاء المدعوين: <b id="ref-count" style="color:var(--accent-gold);">0</b> صديق</div>
+    </div>
+  </div>
+
+  <!-- TAB 4: WALLET (المحفظة) -->
   <div id="tab-wallet" class="tab-content">
     <div class="card">
-      <div class="card-title">المحفظة السحابية 💎</div>
-      <div class="card-desc">قم بربط محفظتك على شبكة TON لسحب المكافآت الحقيقية مستقبلاً.</div>
-      <div id="ton-connect-btn" style="display: flex; justify-content: center; margin-top: 15px;"></div>
+      <div class="card-title">ربط المحفظة 💎</div>
+      <div class="card-desc">اربط محفظة TON الخاصة بك لاستلام السحوبات والأرباح مستقبلاً.</div>
+      <div id="ton-connect-btn" style="display:flex; justify-content:center; margin-top:10px;"></div>
     </div>
   </div>
 
   <!-- Bottom Navigation Bar -->
   <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchTab('tab-game', this)">الدمج 🎮</div>
-    <div class="nav-item" onclick="switchTab('tab-rewards', this)">المكافآت 🎁</div>
-    <div class="nav-item" onclick="switchTab('tab-wallet', this)">المحفظة 💎</div>
+    <div class="nav-item active" onclick="switchTab('tab-merge', this)">
+      <span class="nav-icon">🎮</span>
+      <span>الدمج</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tab-tasks', this)">
+      <span class="nav-icon">🎯</span>
+      <span>المهام</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tab-ref', this)">
+      <span class="nav-icon">👥</span>
+      <span>الدعوة</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tab-wallet', this)">
+      <span class="nav-icon">💎</span>
+      <span>المحفظة</span>
+    </div>
   </div>
 
+  <!-- Toast Notification -->
   <div id="toast" class="toast"></div>
 
   <script>
-    // Telegram WebApp Setup
+    // Initialize Telegram WebApp
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.expand();
       tg.ready();
     }
 
-    // Dog Types & Incomes
-    const DOG_DATA = {
-      1: { name: "جرو صغير", icon: "🐶", income: 1 },
-      2: { name: "كلب عادي", icon: "🐕", income: 3 },
-      3: { name: "كلب حراسة", icon: "🦮", income: 8 },
-      4: { name: "كلب بوليسي", icon: "🐕‍🦺", income: 20 },
-      5: { name: "كلب بيتبول", icon: "🐩", income: 50 },
-      6: { name: "ذئب صائد", icon: "🐺", income: 120 },
-      7: { name: "ثعلب ذهبي", icon: "🦊", income: 300 },
-      8: { name: "أسد الأسطورة", icon: "🦁", income: 800 }
-    };
+    // Dynamic Emojis for Infinite Levels
+    const DOG_EMOJIS = ['🐶', '🐕', '🦮', '🐕‍🦺', '🐩', '🐺', '🦊', '🦁', '🐯', '🐅', '🐆', '🐉', '🐲', '🦄', '🦅'];
 
-    // Game State
-    let coins = parseInt(localStorage.getItem('dog_coins')) || 200;
-    let buyPrice = parseInt(localStorage.getItem('dog_buyPrice')) || 50;
-    let gridSlots = JSON.parse(localStorage.getItem('dog_grid')) || [1, 1, 0, 0, 0, 0, 0, 0, 0];
-    let selectedSlotIndex = null;
+    // State Variables
+    let coins = parseFloat(localStorage.getItem('p_coins'));
+    if (isNaN(coins) || coins === null) {
+      coins = 100.00; // 100 coins initial bonus for new user
+    }
 
-    // Adsgram Controller
+    let grid = JSON.parse(localStorage.getItem('p_grid')) || [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let selectedSlot = null;
+    let refCount = parseInt(localStorage.getItem('p_refCount')) || 0;
+
+    // Adsgram Setup (Task tab only)
     const ADSGRAM_BLOCK_ID = "46894";
     let AdController = null;
     if (window.Adsgram) {
       AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
     }
 
-    // Toast Notification
     function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 2800);
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2600);
     }
 
-    // Tab Switching
     function switchTab(tabId, el) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -355,156 +540,166 @@
       el.classList.add('active');
     }
 
-    // Calculate Total Income/sec
-    function getIncomePerSec() {
+    // Calculate Mining Rate per Hour for a given level
+    // Level 1 = 1 coin/hr. Each level above 1 adds 10% compounding/additive
+    function getDogRate(lvl) {
+      if (lvl <= 0) return 0;
+      if (lvl === 1) return 1.0;
+      return 1.0 + ((lvl - 1) * 0.10); // +10% for each additional level
+    }
+
+    function getTotalHourlyRate() {
       let total = 0;
-      gridSlots.forEach(lvl => {
-        if (lvl > 0 && DOG_DATA[lvl]) {
-          total += DOG_DATA[lvl].income;
-        }
+      grid.forEach(lvl => {
+        total += getDogRate(lvl);
       });
       return total;
     }
 
-    // Render Grid UI
     function renderGrid() {
       const gridContainer = document.getElementById('grid');
       gridContainer.innerHTML = '';
 
-      gridSlots.forEach((level, idx) => {
+      grid.forEach((lvl, idx) => {
         const slot = document.createElement('div');
-        slot.className = `grid-slot ${selectedSlotIndex === idx ? 'selected' : ''}`;
+        slot.className = `grid-slot ${selectedSlot === idx ? 'selected' : ''}`;
         slot.onclick = () => handleSlotClick(idx);
 
-        if (level > 0 && DOG_DATA[level]) {
+        if (lvl > 0) {
+          const emojiIdx = (lvl - 1) % DOG_EMOJIS.length;
           slot.innerHTML = `
-            <div class="dog-icon">${DOG_DATA[level].icon}</div>
-            <div class="dog-level">مستوى ${level}</div>
+            <div class="dog-icon">${DOG_EMOJIS[emojiIdx]}</div>
+            <div class="dog-lvl-badge">LVL ${lvl}</div>
           `;
         }
 
         gridContainer.appendChild(slot);
       });
 
-      // Update Header Text
-      document.getElementById('coin-balance').innerText = Math.floor(coins);
-      document.getElementById('sec-income').innerText = `+${getIncomePerSec()}/ثانية`;
-      document.getElementById('buy-price').innerText = buyPrice;
+      // Update UI Header Balances
+      document.getElementById('coin-balance').innerText = coins.toFixed(2);
+      document.getElementById('hourly-rate').innerText = `+${getTotalHourlyRate().toFixed(2)}/ساعة`;
 
-      // Save Local Data
-      localStorage.setItem('dog_coins', coins);
-      localStorage.setItem('dog_buyPrice', buyPrice);
-      localStorage.setItem('dog_grid', JSON.stringify(gridSlots));
+      // Save State
+      localStorage.setItem('p_coins', coins);
+      localStorage.setItem('p_grid', JSON.stringify(grid));
     }
 
-    // Handle Slot Click (Merge or Select)
-    function handleSlotClick(index) {
-      if (selectedSlotIndex === null) {
-        // First selection (must be a dog slot)
-        if (gridSlots[index] > 0) {
-          selectedSlotIndex = index;
-        }
-      } else if (selectedSlotIndex === index) {
-        // Unselect if clicked again
-        selectedSlotIndex = null;
+    function handleSlotClick(idx) {
+      if (selectedSlot === null) {
+        if (grid[idx] > 0) selectedSlot = idx;
+      } else if (selectedSlot === idx) {
+        selectedSlot = null;
       } else {
-        // Target slot
-        const sourceLvl = gridSlots[selectedSlotIndex];
-        const targetLvl = gridSlots[index];
+        const srcLvl = grid[selectedSlot];
+        const targetLvl = grid[idx];
 
         if (targetLvl === 0) {
           // Move dog to empty slot
-          gridSlots[index] = sourceLvl;
-          gridSlots[selectedSlotIndex] = 0;
-          selectedSlotIndex = null;
-        } else if (targetLvl === sourceLvl) {
+          grid[idx] = srcLvl;
+          grid[selectedSlot] = 0;
+          selectedSlot = null;
+        } else if (targetLvl === srcLvl) {
           // Merge two dogs!
-          const nextLevel = sourceLvl + 1;
-          if (DOG_DATA[nextLevel]) {
-            gridSlots[index] = nextLevel;
-            gridSlots[selectedSlotIndex] = 0;
-            selectedSlotIndex = null;
-            showToast(`🎉 تم دمج الكلاب ونمت إلى مستوى ${nextLevel}!`);
-          } else {
-            showToast("🌟 لقد وصلت للحد الأقصى من مستويات الكلاب!");
-            selectedSlotIndex = null;
-          }
+          grid[idx] = srcLvl + 1;
+          grid[selectedSlot] = 0;
+          selectedSlot = null;
+          showToast(`🎉 تم الدمج! كلب جديد من المستوى ${srcLvl + 1}`);
         } else {
-          // Select the new slot instead
-          selectedSlotIndex = index;
+          selectedSlot = idx;
         }
       }
       renderGrid();
     }
 
-    // Buy Level 1 Dog
-    function buyDog() {
-      const emptyIdx = gridSlots.indexOf(0);
+    function dropDog() {
+      const emptyIdx = grid.indexOf(0);
       if (emptyIdx === -1) {
-        showToast("⚠️ لا توجد خانات فارغة! قم بدمج الكلاب أولاً.");
+        showToast("⚠️ لا توجد خانة فارغة! قم بدمج الكلاب أولاً.");
         return;
       }
 
-      if (coins >= buyPrice) {
-        coins -= buyPrice;
-        gridSlots[emptyIdx] = 1; // Add Level 1 Dog
-        buyPrice = Math.floor(buyPrice * 1.3); // Increase cost
+      if (coins >= 1.0) {
+        coins -= 1.0;
+        grid[emptyIdx] = 1; // Add Level 1 Dog
         renderGrid();
-        showToast("🐶 تم شراء كلب جديد بنجاح!");
       } else {
-        showToast("❌ رصيدك من الذهب غير كافٍ!");
+        showToast("❌ رصيدك غير كافٍ لشراء كلب (تحتاج 1 عملة).");
       }
     }
 
-    // Watch Ad for 500 Coins
-    function watchAdForCoins() {
-      if (!AdController) {
-        showToast("⚠️ جاري تهيئة الإعلانات، حاول مجدداً...");
-        return;
+    function autoMerge() {
+      let mergedCount = 0;
+      for (let i = 0; i < grid.length; i++) {
+        if (grid[i] === 0) continue;
+        for (let j = i + 1; j < grid.length; j++) {
+          if (grid[i] > 0 && grid[i] === grid[j]) {
+            grid[i] = grid[i] + 1;
+            grid[j] = 0;
+            mergedCount++;
+            break;
+          }
+        }
       }
-
-      AdController.show().then(() => {
-        coins += 500;
-        renderGrid();
-        showToast("🎁 تم مشاهدة الإعلان! أضيفت +500 قطعة ذهبية.");
-      }).catch(() => {
-        showToast("⚠️ لم تكتمل مشاهدة الإعلان.");
-      });
+      if (mergedCount > 0) {
+        showToast(`⚡ تم الدمج التلقائي لـ ${mergedCount} كلاب!`);
+      } else {
+        showToast("ℹ️ لا توجد كلاب متطابقة للدمج.");
+      }
+      renderGrid();
     }
 
-    // Watch Ad for Free Dog
-    function watchAdForDog() {
-      const emptyIdx = gridSlots.indexOf(0);
-      if (emptyIdx === -1) {
-        showToast("⚠️ لا توجد خانة فارغة للحصول على الكلب!");
-        return;
-      }
-
-      if (!AdController) {
-        showToast("⚠️ جاري تهيئة الإعلانات، حاول مجدداً...");
-        return;
-      }
-
-      AdController.show().then(() => {
-        gridSlots[emptyIdx] = 2; // Level 2 dog reward
-        renderGrid();
-        showToast("🎁 رائع! حصلت على كلب من المستوى 2 مجاناً!");
-      }).catch(() => {
-        showToast("⚠️ لم تكتمل مشاهدة الإعلان.");
-      });
-    }
-
-    // Game Loop (Coins Generation Every Second)
+    // Passive Mining Loop (Calculated every 1 second)
     setInterval(() => {
-      const inc = getIncomePerSec();
-      if (inc > 0) {
-        coins += inc;
-        document.getElementById('coin-balance').innerText = Math.floor(coins);
-        localStorage.setItem('dog_coins', coins);
+      const hourlyRate = getTotalHourlyRate();
+      if (hourlyRate > 0) {
+        const perSecIncome = hourlyRate / 3600;
+        coins += perSecIncome;
+        document.getElementById('coin-balance').innerText = coins.toFixed(2);
+        localStorage.setItem('p_coins', coins);
       }
     }, 1000);
 
-    // Initialize TonConnect UI
+    // Tasks & Ads Functionality
+    function watchAdsgramAd() {
+      if (!AdController) {
+        showToast("⚠️ جاري تهيئة سكريبت الإعلانات...");
+        return;
+      }
+      AdController.show().then(() => {
+        coins += 50;
+        renderGrid();
+        showToast("🎉 تم الحصول على +50 عملة بمشاهدة الإعلان!");
+      }).catch(() => {
+        showToast("⚠️ لم تكتمل مشاهدة الإعلان.");
+      });
+    }
+
+    function claimDailyReward() {
+      const lastClaim = localStorage.getItem('p_lastClaim');
+      const now = new Date().toDateString();
+      if (lastClaim === now) {
+        showToast("⚠️ لقد استلمت مكافأة اليوم بالفعل!");
+      } else {
+        coins += 20;
+        localStorage.setItem('p_lastClaim', now);
+        renderGrid();
+        showToast("🎁 تم استلام +20 عملة مكافأة يومية!");
+      }
+    }
+
+    // Referral System
+    const userTelegramId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "12345678";
+    const refLink = `https://t.me/ProAiMining2026_bot?start=ref_${userTelegramId}`;
+    document.getElementById('ref-link').innerText = refLink;
+    document.getElementById('ref-count').innerText = refCount;
+
+    function copyRefLink() {
+      navigator.clipboard.writeText(refLink);
+      showToast("📋 تم نسخ رابط الإحالة بنجاح!");
+    }
+
+    // TonConnect Setup
     if (window.TON_CONNECT_UI) {
       new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://Ibrahimizzeldin.github.io/proai-app/tonconnect-manifest.json',
@@ -512,7 +707,7 @@
       });
     }
 
-    // First Load
+    // First Render
     renderGrid();
   </script>
 </body>
