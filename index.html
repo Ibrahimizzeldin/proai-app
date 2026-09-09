@@ -47,7 +47,7 @@
       overflow-x: hidden;
     }
 
-    /* Top Title Header */
+    /* Header */
     .app-header {
       width: 100%;
       max-width: 420px;
@@ -65,7 +65,7 @@
       text-transform: uppercase;
     }
 
-    /* Top Balance Cards Row */
+    /* Stats Cards */
     .stats-row {
       width: 100%;
       max-width: 420px;
@@ -112,7 +112,7 @@
       display: block;
     }
 
-    /* Grid Container */
+    /* Game Grid */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -127,7 +127,6 @@
       position: relative;
     }
 
-    /* Separated Slots */
     .grid-slot {
       aspect-ratio: 1;
       background: linear-gradient(145deg, #1a2233, #121724);
@@ -228,7 +227,7 @@
       box-shadow: 0 12px 28px rgba(0,0,0,0.8);
     }
 
-    /* Action Controls */
+    /* Controls */
     .action-controls {
       display: grid;
       grid-template-columns: 1fr 2fr;
@@ -398,7 +397,7 @@
     <div class="app-title">PROAI DOG MERGE 🐶</div>
   </div>
 
-  <!-- Top Stats Row -->
+  <!-- Stats Header -->
   <div class="stats-row">
     <div class="stat-card">
       <span class="stat-label">الرصيد الكلي 🪙</span>
@@ -493,6 +492,7 @@
   <div id="toast" class="toast"></div>
 
   <script>
+    // Telegram Web App Setup
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.expand();
@@ -501,6 +501,7 @@
 
     const DOG_EMOJIS = ['🐶', '🐕', '🦮', '🐕‍🦺', '🐩', '🐺', '🦊', '🦁', '🐯', '🐅', '🐆', '🐉', '🐲', '🦄', '🦅'];
 
+    // State Variables Initialization
     let coins = parseFloat(localStorage.getItem('p_coins'));
     if (isNaN(coins) || coins === null) {
       coins = 100.00;
@@ -514,6 +515,7 @@
     let touchDragSource = null;
     let ghostElem = null;
 
+    // Adsgram Setup
     const ADSGRAM_BLOCK_ID = "46894";
     let AdController = null;
     if (window.Adsgram) {
@@ -539,10 +541,10 @@
     }
 
     // FORMULA FIX:
-    // Base Level 1 = 100 coins/hr
-    // Compounding Multiplier = 2.10 per level (guarantees merge is always profitable)
+    // Level 1 = 100 coins/hr
+    // Multiplier = 2.10 per level. Merging two LVL N (2x Rate) gives LVL N+1 (2.1x Rate = +5% Net Gain).
     function getDogRate(lvl) {
-      if (lvl <= 0) return 0;
+      if (!lvl || lvl <= 0) return 0;
       return 100 * Math.pow(2.10, lvl - 1);
     }
 
@@ -750,6 +752,7 @@
       renderGrid();
     }
 
+    // Passive Mining Loop
     setInterval(() => {
       const hourlyRate = getTotalHourlyRate();
       if (hourlyRate > 0) {
@@ -760,6 +763,7 @@
       }
     }, 1000);
 
+    // Adsgram Reward Logic
     function watchAdsgramAd() {
       if (!AdController) {
         showToast("⚠️ جاري تهيئة سكريبت الإعلانات...");
@@ -774,6 +778,7 @@
       });
     }
 
+    // Daily Claim Logic
     function claimDailyReward() {
       const lastClaim = localStorage.getItem('p_lastClaim');
       const now = new Date().toDateString();
@@ -787,6 +792,7 @@
       }
     }
 
+    // Referral Link
     const userTelegramId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "12345678";
     const refLink = `https://t.me/ProAiMining2026_bot?start=ref_${userTelegramId}`;
     document.getElementById('ref-link').innerText = refLink;
@@ -797,6 +803,7 @@
       showToast("📋 تم نسخ رابط الإحالة بنجاح!");
     }
 
+    // TON Connect Initialization
     if (window.TON_CONNECT_UI) {
       new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://Ibrahimizzeldin.github.io/proai-app/tonconnect-manifest.json',
@@ -804,6 +811,7 @@
       });
     }
 
+    // First Render
     renderGrid();
   </script>
 </body>
