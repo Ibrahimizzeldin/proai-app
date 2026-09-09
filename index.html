@@ -14,13 +14,13 @@
 
   <style>
     :root {
-      --bg-color: #0b0e17;
-      --card-bg: #131826;
-      --card-border: rgba(255, 255, 255, 0.08);
+      --bg-color: #070a12;
+      --card-bg: #111625;
+      --card-border: rgba(255, 255, 255, 0.12);
       --accent-gold: #f59e0b;
       --accent-gold-light: #fbbf24;
       --accent-green: #10b981;
-      --accent-purple: #8b5cf6;
+      --accent-blue: #3b82f6;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
     }
@@ -82,7 +82,7 @@
       padding: 12px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     .stat-label {
@@ -92,7 +92,7 @@
     }
 
     .stat-value {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
       color: var(--accent-gold);
     }
@@ -112,56 +112,70 @@
       display: block;
     }
 
-    /* Grid Container (5 Columns x 4 Rows = 20 Slots) */
+    /* Distinct & Stylized Grid Container */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
+      gap: 9px;
       width: 100%;
-      background: #0f1422;
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 10px;
+      background: linear-gradient(180deg, #0d121f, #080c15);
+      border: 2px solid #1e293b;
+      border-radius: 20px;
+      padding: 12px;
       margin-bottom: 14px;
-      box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7), inset 0 0 15px rgba(0,0,0,0.9);
       position: relative;
     }
 
+    /* Stylized Separated Slots */
     .grid-slot {
       aspect-ratio: 1;
-      background: #161c2e;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
+      background: linear-gradient(145deg, #1a2233, #121724);
+      border: 1.5px solid #2b364a;
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       position: relative;
       cursor: pointer;
-      transition: transform 0.12s, border-color 0.12s;
-      touch-action: none; /* Prevents scroll while dragging on mobile */
+      transition: all 0.15s ease;
+      touch-action: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+
+    /* Active Dog Slot Highlight */
+    .grid-slot.has-dog {
+      background: linear-gradient(145deg, #25334d, #182236);
+      border-color: rgba(59, 130, 246, 0.6);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25), inset 0 1px 2px rgba(255,255,255,0.2);
     }
 
     .grid-slot.selected {
-      border-color: var(--accent-gold);
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
-      transform: scale(1.05);
-      background: #232a3f;
+      border-color: var(--accent-gold) !important;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.8) !important;
+      transform: scale(1.06);
+      background: linear-gradient(145deg, #3a2e1d, #241c10) !important;
     }
 
+    /* Locked Slot Visual Contrast */
     .grid-slot.locked {
-      background: rgba(15, 20, 34, 0.7);
-      border: 1px dashed rgba(255, 255, 255, 0.15);
+      background: linear-gradient(145deg, #0e121a, #090c12);
+      border: 1px dashed #242e3d;
+      opacity: 0.65;
+      box-shadow: none;
     }
 
     .grid-slot.next-lock {
-      border-color: var(--accent-gold);
+      border: 1.5px dashed var(--accent-gold);
+      background: linear-gradient(145deg, #211a10, #141009);
+      opacity: 1;
       animation: pulse 1.5s infinite alternate;
     }
 
     @keyframes pulse {
-      0% { border-color: rgba(245, 158, 11, 0.3); }
-      100% { border-color: rgba(245, 158, 11, 0.9); }
+      0% { border-color: rgba(245, 158, 11, 0.4); }
+      100% { border-color: rgba(245, 158, 11, 1); box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
     }
 
     .dog-icon {
@@ -169,6 +183,7 @@
       line-height: 1;
       margin-bottom: 2px;
       pointer-events: none;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
     }
 
     .dog-lvl-badge {
@@ -176,10 +191,11 @@
       font-weight: 800;
       color: #000;
       background: var(--accent-gold-light);
-      padding: 1px 5px;
+      padding: 1px 6px;
       border-radius: 6px;
       line-height: 1;
       pointer-events: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .lock-title {
@@ -196,23 +212,23 @@
       pointer-events: none;
     }
 
-    /* Floating Ghost Element during Mobile Drag */
+    /* Floating Ghost Element for Touch Drag */
     .drag-ghost {
       position: fixed;
       pointer-events: none;
       z-index: 9999;
       transform: translate(-50%, -50%) scale(1.25);
-      opacity: 0.9;
-      background: #232a3f;
+      opacity: 0.95;
+      background: #25334d;
       border: 2px solid var(--accent-gold);
-      border-radius: 12px;
-      width: 55px;
-      height: 55px;
+      border-radius: 14px;
+      width: 58px;
+      height: 58px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.8);
     }
 
     /* Action Controls */
@@ -236,6 +252,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
     }
 
     .btn-drop {
@@ -281,7 +298,7 @@
       font-size: 13px;
     }
 
-    /* Cards Layout for Tasks & Referral */
+    /* Cards Layout */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -319,7 +336,7 @@
     }
 
     .ref-link-box {
-      background: #0f1422;
+      background: #090d16;
       border: 1px dashed var(--accent-gold);
       padding: 10px;
       border-radius: 10px;
@@ -336,7 +353,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: #0d111d;
+      background: #0a0d16;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       justify-content: space-around;
@@ -503,7 +520,7 @@
       coins = 100.00; // 100 starting coins for new users
     }
 
-    let unlockedSlots = parseInt(localStorage.getItem('p_unlockedSlots')) || 10; // Default 10 unlocked slots
+    let unlockedSlots = parseInt(localStorage.getItem('p_unlockedSlots')) || 10;
     let grid = JSON.parse(localStorage.getItem('p_grid')) || [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let selectedSlot = null;
     let refCount = parseInt(localStorage.getItem('p_refCount')) || 0;
@@ -533,16 +550,17 @@
       el.classList.add('active');
     }
 
-    // Unlock Slot Price Formula: Slot 11=15, 12=30, 13=45, etc.
+    // Unlock Slot Price Formula
     function getSlotUnlockCost(slotIndex) {
       return (slotIndex - 9) * 15;
     }
 
-    // Mining Math Rules: Level 1 = 1 coin/hr. Level 2+ = +10% rate per level
+    // UPDATED MINING FORMULA:
+    // Level 1 = 100 coins/hr
+    // Each higher level increases by 10% compounding
     function getDogRate(lvl) {
       if (lvl <= 0) return 0;
-      if (lvl === 1) return 1.0;
-      return 1.0 + ((lvl - 1) * 0.10); // +10% per level above L1
+      return 100 * Math.pow(1.10, lvl - 1);
     }
 
     function getTotalHourlyRate() {
@@ -555,7 +573,7 @@
       return total;
     }
 
-    // Main Grid UI Renderer
+    // Render Grid with Explicit Visual Styling
     function renderGrid() {
       const gridContainer = document.getElementById('grid');
       gridContainer.innerHTML = '';
@@ -565,8 +583,10 @@
         slot.dataset.index = idx;
 
         if (idx < unlockedSlots) {
-          // Unlocked Slot
-          slot.className = `grid-slot ${selectedSlot === idx ? 'selected' : ''}`;
+          // Unlocked Slot Styling
+          const hasDogClass = lvl > 0 ? 'has-dog' : '';
+          const selectedClass = selectedSlot === idx ? 'selected' : '';
+          slot.className = `grid-slot ${hasDogClass} ${selectedClass}`;
           
           if (lvl > 0) {
             const emojiIdx = (lvl - 1) % DOG_EMOJIS.length;
@@ -576,16 +596,16 @@
             `;
           }
 
-          // Tap/Click Handler (Fallback)
+          // Click / Touch Fallbacks
           slot.onclick = () => handleSlotClick(idx);
 
-          // Mobile Touch Drag Event Listeners
+          // Mobile Touch Drag Engine
           slot.addEventListener('touchstart', (e) => handleTouchStart(e, idx), { passive: false });
           slot.addEventListener('touchmove', handleTouchMove, { passive: false });
           slot.addEventListener('touchend', (e) => handleTouchEnd(e, idx));
 
         } else {
-          // Locked Slot
+          // Locked Slot Styling
           const isNextLock = (idx === unlockedSlots);
           const cost = getSlotUnlockCost(idx);
           slot.className = `grid-slot locked ${isNextLock ? 'next-lock' : ''}`;
@@ -606,11 +626,11 @@
         gridContainer.appendChild(slot);
       });
 
-      // Update Top Stats
+      // Update Top Display
       document.getElementById('coin-balance').innerText = coins.toFixed(2);
       document.getElementById('hourly-rate').innerText = `+${getTotalHourlyRate().toFixed(2)}/ساعة`;
 
-      // Save State to LocalStorage
+      // Save State
       localStorage.setItem('p_coins', coins);
       localStorage.setItem('p_unlockedSlots', unlockedSlots);
       localStorage.setItem('p_grid', JSON.stringify(grid));
@@ -628,7 +648,7 @@
       }
     }
 
-    // Core Merge / Move Action Logic
+    // Merge / Move Core Engine
     function executeMergeOrMove(fromIdx, toIdx) {
       if (fromIdx === null || fromIdx === toIdx || toIdx >= unlockedSlots) return;
 
@@ -638,16 +658,13 @@
       if (srcLvl === 0) return;
 
       if (targetLvl === 0) {
-        // Move dog to empty target slot
         grid[toIdx] = srcLvl;
         grid[fromIdx] = 0;
       } else if (targetLvl === srcLvl) {
-        // Merge identical level dogs
         grid[toIdx] = srcLvl + 1;
         grid[fromIdx] = 0;
         showToast(`🎉 تم الدمج! كلب جديد من المستوى ${srcLvl + 1}`);
       } else {
-        // Swap positions if different levels
         grid[fromIdx] = targetLvl;
         grid[toIdx] = srcLvl;
       }
@@ -656,7 +673,7 @@
       renderGrid();
     }
 
-    // Tap/Click Handler Fallback
+    // Click Fallback
     function handleSlotClick(idx) {
       if (selectedSlot === null) {
         if (grid[idx] > 0) selectedSlot = idx;
@@ -669,12 +686,11 @@
       renderGrid();
     }
 
-    // Touch Drag Engine Functions (Mobile Touch Screen Optimized)
+    // Mobile Drag Engine
     function handleTouchStart(e, idx) {
       if (grid[idx] === 0) return;
       touchDragSource = idx;
 
-      // Create Drag Ghost Element
       const lvl = grid[idx];
       const emojiIdx = (lvl - 1) % DOG_EMOJIS.length;
       
@@ -693,7 +709,7 @@
 
     function handleTouchMove(e) {
       if (touchDragSource === null || !ghostElem) return;
-      e.preventDefault(); // Lock screen scroll during drag
+      e.preventDefault();
       const touch = e.touches[0];
       ghostElem.style.left = touch.clientX + 'px';
       ghostElem.style.top = touch.clientY + 'px';
@@ -719,7 +735,7 @@
       touchDragSource = null;
     }
 
-    // Drop Level 1 Dog Button (STRICT 1 COIN COST ALWAYS)
+    // Drop Level 1 Dog (Fixed 1 Coin Cost)
     function dropDog() {
       let emptyIdx = -1;
       for (let i = 0; i < unlockedSlots; i++) {
@@ -736,14 +752,14 @@
 
       if (coins >= 1.0) {
         coins -= 1.0;
-        grid[emptyIdx] = 1; // Add Level 1 Dog
+        grid[emptyIdx] = 1;
         renderGrid();
       } else {
         showToast("❌ رصيدك غير كافٍ لشراء كلب (تحتاج 1 عملة).");
       }
     }
 
-    // Auto Merge Functionality
+    // Auto Merge
     function autoMerge() {
       let mergedCount = 0;
       for (let i = 0; i < unlockedSlots; i++) {
@@ -765,7 +781,7 @@
       renderGrid();
     }
 
-    // Real-time Passive Mining Calculation (1 Second Loop)
+    // Passive Mining Loop (Per Second Calculation)
     setInterval(() => {
       const hourlyRate = getTotalHourlyRate();
       if (hourlyRate > 0) {
@@ -776,7 +792,7 @@
       }
     }, 1000);
 
-    // Ads Control (Tasks Tab Only)
+    // Ads Controller (Tasks Tab Only)
     function watchAdsgramAd() {
       if (!AdController) {
         showToast("⚠️ جاري تهيئة سكريبت الإعلانات...");
@@ -804,7 +820,7 @@
       }
     }
 
-    // Referral Setup
+    // Referral System
     const userTelegramId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "12345678";
     const refLink = `https://t.me/ProAiMining2026_bot?start=ref_${userTelegramId}`;
     document.getElementById('ref-link').innerText = refLink;
@@ -815,7 +831,7 @@
       showToast("📋 تم نسخ رابط الإحالة بنجاح!");
     }
 
-    // TonConnect Setup
+    // TON Connect UI Integration
     if (window.TON_CONNECT_UI) {
       new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://Ibrahimizzeldin.github.io/proai-app/tonconnect-manifest.json',
@@ -823,7 +839,7 @@
       });
     }
 
-    // First Render
+    // Initial Launch Render
     renderGrid();
   </script>
 </body>
