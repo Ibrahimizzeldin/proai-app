@@ -43,6 +43,7 @@
       align-items: center;
       padding: 12px;
       padding-bottom: 84px;
+      touch-action: manipulation;
     }
 
     /* Top Title Header */
@@ -99,42 +100,6 @@
       color: var(--accent-green);
     }
 
-    /* Promo Vault Banner */
-    .vault-banner {
-      width: 100%;
-      max-width: 420px;
-      background: linear-gradient(135deg, #1e1b4b, #311b92);
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      border-radius: 14px;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .vault-info h4 {
-      font-size: 13px;
-      color: #c084fc;
-      text-transform: uppercase;
-      font-weight: 800;
-    }
-
-    .vault-info p {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .vault-btn {
-      background: var(--accent-gold);
-      color: #000;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: 800;
-      font-size: 12px;
-    }
-
     /* Tab Contents */
     .tab-content {
       display: none;
@@ -146,7 +111,7 @@
       display: block;
     }
 
-    /* Grid Area (5 Columns x 4 Rows) */
+    /* Grid Area (5 Columns x 4 Rows = 20 Slots) */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -158,6 +123,7 @@
       padding: 10px;
       margin-bottom: 14px;
       box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);
+      position: relative;
     }
 
     .grid-slot {
@@ -172,6 +138,7 @@
       position: relative;
       cursor: pointer;
       transition: transform 0.15s, border-color 0.15s;
+      touch-action: none;
     }
 
     .grid-slot.selected {
@@ -182,14 +149,26 @@
     }
 
     .grid-slot.locked {
-      background: rgba(15, 20, 34, 0.6);
-      border-color: rgba(255, 255, 255, 0.02);
+      background: rgba(15, 20, 34, 0.7);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+    }
+
+    .grid-slot.next-lock {
+      border-color: var(--accent-gold);
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { border-color: rgba(245, 158, 11, 0.3); }
+      100% { border-color: rgba(245, 158, 11, 0.9); }
     }
 
     .dog-icon {
       font-size: 26px;
       line-height: 1;
       margin-bottom: 2px;
+      pointer-events: none;
     }
 
     .dog-lvl-badge {
@@ -200,11 +179,40 @@
       padding: 1px 5px;
       border-radius: 6px;
       line-height: 1;
+      pointer-events: none;
     }
 
-    .lock-icon {
-      font-size: 14px;
-      opacity: 0.3;
+    .lock-title {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      pointer-events: none;
+    }
+
+    .lock-price {
+      font-size: 9px;
+      color: var(--accent-gold);
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    /* Touch Drag Ghost Floating Element */
+    .drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%) scale(1.2);
+      opacity: 0.9;
+      background: #232a3f;
+      border: 2px solid var(--accent-gold);
+      border-radius: 12px;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
     }
 
     /* Merge Control Actions */
@@ -250,7 +258,7 @@
       transform: scale(0.97);
     }
 
-    /* Fusion Ready Status Card */
+    /* Fusion Status Banner */
     .fusion-card {
       width: 100%;
       background: var(--card-bg);
@@ -271,16 +279,6 @@
       color: var(--text-main);
       display: block;
       font-size: 13px;
-    }
-
-    .btn-fusion {
-      background: #fbbf24;
-      color: #000;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 11px;
     }
 
     /* Cards Layout for Tasks & Referral */
@@ -378,7 +376,7 @@
       font-size: 13px;
       font-weight: 800;
       display: none;
-      z-index: 1000;
+      z-index: 10000;
       box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
   </style>
@@ -402,15 +400,6 @@
     </div>
   </div>
 
-  <!-- Vault Event Banner -->
-  <div class="vault-banner">
-    <div class="vault-info">
-      <h4>خزنة الكلاب الذهبية 🚀</h4>
-      <p>ضاعف التعدين بدمج مستويات أعلى</p>
-    </div>
-    <button class="vault-btn">نشط</button>
-  </div>
-
   <!-- TAB 1: MERGE GAME (الدمج) -->
   <div id="tab-merge" class="tab-content active">
     <!-- Grid (5x4 = 20 Slots) -->
@@ -429,10 +418,9 @@
     <!-- Status Banner -->
     <div class="fusion-card">
       <div class="fusion-text">
-        <strong>جاهز للدمج 🐕</strong>
-        <span>اضغط على كلبين من نفس المستوى لدمجهما!</span>
+        <strong>طريقة اللعب 🐕</strong>
+        <span>اسحب الكلب وأفلته فوق كلب متطابق لدمجهما!</span>
       </div>
-      <button class="btn-fusion">دمج</button>
     </div>
   </div>
 
@@ -440,7 +428,7 @@
   <div id="tab-tasks" class="tab-content">
     <div class="card">
       <div class="card-title">إعلان مكافأة مجاني 🎬</div>
-      <div class="card-desc">شاهد إعلاناً قصيراً للحصول على <b>+50 عملة مجانية</b> لشراء المزيد من الكلاب!</div>
+      <div class="card-desc">شاهد إعلاناً قصيراً للحصول على <b>+50 عملة مجانية</b> لشراء وتوسيع خريطتك!</div>
       <button class="btn-task" onclick="watchAdsgramAd()">مشاهدة الإعلان 📺</button>
     </div>
 
@@ -499,7 +487,7 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    // Initialize Telegram WebApp
+    // Telegram WebApp Setup
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.expand();
@@ -512,12 +500,17 @@
     // State Variables
     let coins = parseFloat(localStorage.getItem('p_coins'));
     if (isNaN(coins) || coins === null) {
-      coins = 100.00; // 100 coins initial bonus for new user
+      coins = 100.00; // 100 coins initial bonus for new users
     }
 
+    let unlockedSlots = parseInt(localStorage.getItem('p_unlockedSlots')) || 10; // Default 10 unlocked
     let grid = JSON.parse(localStorage.getItem('p_grid')) || [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let selectedSlot = null;
     let refCount = parseInt(localStorage.getItem('p_refCount')) || 0;
+
+    // Drag & Drop State
+    let touchDragSource = null;
+    let ghostElem = null;
 
     // Adsgram Setup (Task tab only)
     const ADSGRAM_BLOCK_ID = "46894";
@@ -540,37 +533,84 @@
       el.classList.add('active');
     }
 
-    // Calculate Mining Rate per Hour for a given level
-    // Level 1 = 1 coin/hr. Each level above 1 adds 10% compounding/additive
+    // Unlock Slot Cost Formula: Slot 11=10, 12=20, 13=30...
+    function getSlotUnlockCost(slotIndex) {
+      return (slotIndex - 9) * 15;
+    }
+
+    // Calculate Mining Rate per Hour
     function getDogRate(lvl) {
       if (lvl <= 0) return 0;
       if (lvl === 1) return 1.0;
-      return 1.0 + ((lvl - 1) * 0.10); // +10% for each additional level
+      return 1.0 + ((lvl - 1) * 0.10); // +10% per level above 1
     }
 
     function getTotalHourlyRate() {
       let total = 0;
-      grid.forEach(lvl => {
-        total += getDogRate(lvl);
+      grid.forEach((lvl, idx) => {
+        if (idx < unlockedSlots) {
+          total += getDogRate(lvl);
+        }
       });
       return total;
     }
 
+    // Render Grid UI
     function renderGrid() {
       const gridContainer = document.getElementById('grid');
       gridContainer.innerHTML = '';
 
       grid.forEach((lvl, idx) => {
         const slot = document.createElement('div');
-        slot.className = `grid-slot ${selectedSlot === idx ? 'selected' : ''}`;
-        slot.onclick = () => handleSlotClick(idx);
+        slot.dataset.index = idx;
 
-        if (lvl > 0) {
-          const emojiIdx = (lvl - 1) % DOG_EMOJIS.length;
+        // Active Unlocked Slot
+        if (idx < unlockedSlots) {
+          slot.className = `grid-slot ${selectedSlot === idx ? 'selected' : ''}`;
+          
+          if (lvl > 0) {
+            const emojiIdx = (lvl - 1) % DOG_EMOJIS.length;
+            slot.innerHTML = `
+              <div class="dog-icon">${DOG_EMOJIS[emojiIdx]}</div>
+              <div class="dog-lvl-badge">LVL ${lvl}</div>
+            `;
+          }
+
+          // Click Fallback
+          slot.onclick = () => handleSlotClick(idx);
+
+          // Desktop HTML5 Drag & Drop
+          slot.draggable = lvl > 0;
+          slot.ondragstart = (e) => { e.dataTransfer.setData('text/plain', idx); };
+          slot.ondragover = (e) => e.preventDefault();
+          slot.ondrop = (e) => {
+            e.preventDefault();
+            const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+            executeMergeOrMove(fromIdx, idx);
+          };
+
+          // Touch Drag Events for Mobile
+          slot.addEventListener('touchstart', (e) => handleTouchStart(e, idx), { passive: false });
+          slot.addEventListener('touchmove', handleTouchMove, { passive: false });
+          slot.addEventListener('touchend', (e) => handleTouchEnd(e, idx));
+
+        } else {
+          // Locked Slot
+          const isNextLock = (idx === unlockedSlots);
+          const cost = getSlotUnlockCost(idx);
+          slot.className = `grid-slot locked ${isNextLock ? 'next-lock' : ''}`;
+          
           slot.innerHTML = `
-            <div class="dog-icon">${DOG_EMOJIS[emojiIdx]}</div>
-            <div class="dog-lvl-badge">LVL ${lvl}</div>
+            <div style="font-size:16px;">🔒</div>
+            <div class="lock-title">${isNextLock ? 'فتح الخانة' : 'مغلق'}</div>
+            ${isNextLock ? `<div class="lock-price">${cost} 🪙</div>` : ''}
           `;
+
+          if (isNextLock) {
+            slot.onclick = () => buyUnlockSlot(idx, cost);
+          } else {
+            slot.onclick = () => showToast("⚠️ افتح الخانات السابقة أولاً!");
+          }
         }
 
         gridContainer.appendChild(slot);
@@ -582,40 +622,125 @@
 
       // Save State
       localStorage.setItem('p_coins', coins);
+      localStorage.setItem('p_unlockedSlots', unlockedSlots);
       localStorage.setItem('p_grid', JSON.stringify(grid));
     }
 
+    // Unlock Slot Purchase Handler
+    function buyUnlockSlot(slotIndex, cost) {
+      if (coins >= cost) {
+        coins -= cost;
+        unlockedSlots++;
+        showToast("🔓 تم فتح خانة جديدة بنجاح!");
+        renderGrid();
+      } else {
+        showToast(`❌ تحتاج إلى ${cost} عملة لفتح هذه الخانة!`);
+      }
+    }
+
+    // Core Logic: Merge or Move
+    function executeMergeOrMove(fromIdx, toIdx) {
+      if (fromIdx === null || fromIdx === toIdx || toIdx >= unlockedSlots) return;
+
+      const srcLvl = grid[fromIdx];
+      const targetLvl = grid[toIdx];
+
+      if (srcLvl === 0) return;
+
+      if (targetLvl === 0) {
+        // Move to empty slot
+        grid[toIdx] = srcLvl;
+        grid[fromIdx] = 0;
+      } else if (targetLvl === srcLvl) {
+        // Merge Dogs!
+        grid[toIdx] = srcLvl + 1;
+        grid[fromIdx] = 0;
+        showToast(`🎉 تم الدمج! كلب جديد من المستوى ${srcLvl + 1}`);
+      } else {
+        // Swap dogs if different levels
+        grid[fromIdx] = targetLvl;
+        grid[toIdx] = srcLvl;
+      }
+
+      selectedSlot = null;
+      renderGrid();
+    }
+
+    // Click Fallback Handler
     function handleSlotClick(idx) {
       if (selectedSlot === null) {
         if (grid[idx] > 0) selectedSlot = idx;
       } else if (selectedSlot === idx) {
         selectedSlot = null;
       } else {
-        const srcLvl = grid[selectedSlot];
-        const targetLvl = grid[idx];
-
-        if (targetLvl === 0) {
-          // Move dog to empty slot
-          grid[idx] = srcLvl;
-          grid[selectedSlot] = 0;
-          selectedSlot = null;
-        } else if (targetLvl === srcLvl) {
-          // Merge two dogs!
-          grid[idx] = srcLvl + 1;
-          grid[selectedSlot] = 0;
-          selectedSlot = null;
-          showToast(`🎉 تم الدمج! كلب جديد من المستوى ${srcLvl + 1}`);
-        } else {
-          selectedSlot = idx;
-        }
+        executeMergeOrMove(selectedSlot, idx);
+        return;
       }
       renderGrid();
     }
 
+    // Touch Drag Handlers (Mobile)
+    function handleTouchStart(e, idx) {
+      if (grid[idx] === 0) return;
+      touchDragSource = idx;
+
+      // Create Floating Ghost Element
+      const lvl = grid[idx];
+      const emojiIdx = (lvl - 1) % DOG_EMOJIS.length;
+      ghostElem = document.createElement('div');
+      ghostElem.className = 'drag-ghost';
+      ghostElem.innerHTML = `
+        <div class="dog-icon">${DOG_EMOJIS[emojiIdx]}</div>
+        <div class="dog-lvl-badge">LVL ${lvl}</div>
+      `;
+      document.body.appendChild(ghostElem);
+
+      const touch = e.touches[0];
+      ghostElem.style.left = touch.clientX + 'px';
+      ghostElem.style.top = touch.clientY + 'px';
+    }
+
+    function handleTouchMove(e) {
+      if (touchDragSource === null || !ghostElem) return;
+      e.preventDefault(); // Prevent page scrolling while dragging
+      const touch = e.touches[0];
+      ghostElem.style.left = touch.clientX + 'px';
+      ghostElem.style.top = touch.clientY + 'px';
+    }
+
+    function handleTouchEnd(e, startIdx) {
+      if (touchDragSource === null) return;
+
+      if (ghostElem) {
+        ghostElem.remove();
+        ghostElem = null;
+      }
+
+      const touch = e.changedTouches[0];
+      const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+      const slotElem = dropTarget ? dropTarget.closest('.grid-slot') : null;
+
+      if (slotElem && slotElem.dataset.index !== undefined) {
+        const toIdx = parseInt(slotElem.dataset.index);
+        executeMergeOrMove(touchDragSource, toIdx);
+      }
+
+      touchDragSource = null;
+    }
+
+    // Drop Dog (Fixed 1 Coin Price ALWAYS)
     function dropDog() {
-      const emptyIdx = grid.indexOf(0);
+      // Find first empty unlocked slot
+      let emptyIdx = -1;
+      for (let i = 0; i < unlockedSlots; i++) {
+        if (grid[i] === 0) {
+          emptyIdx = i;
+          break;
+        }
+      }
+
       if (emptyIdx === -1) {
-        showToast("⚠️ لا توجد خانة فارغة! قم بدمج الكلاب أولاً.");
+        showToast("⚠️ الخانات المفتوحة ممتلئة! ادمج الكلاب أو افتح خانات جديدة.");
         return;
       }
 
@@ -628,11 +753,12 @@
       }
     }
 
+    // Auto Merge Button
     function autoMerge() {
       let mergedCount = 0;
-      for (let i = 0; i < grid.length; i++) {
+      for (let i = 0; i < unlockedSlots; i++) {
         if (grid[i] === 0) continue;
-        for (let j = i + 1; j < grid.length; j++) {
+        for (let j = i + 1; j < unlockedSlots; j++) {
           if (grid[i] > 0 && grid[i] === grid[j]) {
             grid[i] = grid[i] + 1;
             grid[j] = 0;
