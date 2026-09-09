@@ -134,7 +134,7 @@
       align-items: center;
       position: relative;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: transform 0.1s ease, border-color 0.15s ease;
       touch-action: none;
       box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
     }
@@ -209,8 +209,8 @@
       position: fixed;
       pointer-events: none;
       z-index: 9999;
-      transform: translate(-50%, -50%) scale(1.25);
-      opacity: 0.95;
+      transform: translate(-50%, -50%) scale(1.2);
+      opacity: 0.9;
       background: #25334d;
       border: 2px solid var(--accent-gold);
       border-radius: 14px;
@@ -224,35 +224,21 @@
     }
 
     .action-controls {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
+      display: flex;
+      flex-direction: column;
       gap: 10px;
       width: 100%;
       margin-bottom: 12px;
     }
 
-    .btn-auto {
-      background: linear-gradient(135deg, #6d28d9, #4c1d95);
-      border: 1px solid rgba(167, 139, 250, 0.3);
-      color: #fff;
-      border-radius: 14px;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
-    }
-
     .btn-drop {
+      width: 100%;
       background: linear-gradient(135deg, #10b981, #047857);
       border: none;
       color: #fff;
       border-radius: 14px;
       padding: 14px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 900;
       cursor: pointer;
       display: flex;
@@ -262,10 +248,11 @@
       box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
     }
 
-    .btn-drop:active, .btn-auto:active {
-      transform: scale(0.97);
+    .btn-drop:active {
+      transform: scale(0.98);
     }
 
+    /* Toggle Switch Container */
     .fusion-card {
       width: 100%;
       background: var(--card-bg);
@@ -277,15 +264,67 @@
       align-items: center;
     }
 
-    .fusion-text {
-      font-size: 12px;
-      color: var(--text-muted);
+    .fusion-info {
+      display: flex;
+      flex-direction: column;
     }
 
-    .fusion-text strong {
+    .fusion-title {
+      font-size: 14px;
+      font-weight: 800;
       color: var(--text-main);
-      display: block;
-      font-size: 13px;
+    }
+
+    .fusion-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Switch Component */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155;
+      transition: .3s;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 2px;
+      background-color: #fff;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(23px);
     }
 
     .card {
@@ -407,18 +446,20 @@
     <div class="grid-container" id="grid"></div>
 
     <div class="action-controls">
-      <button class="btn-auto" onclick="autoMerge(false)">
-        <span>دمج يدوياً ⚡</span>
-      </button>
       <button class="btn-drop" onclick="dropDog()">
-        إسقاط كلب (-1 🪙)
+        إسقاط كلب جديد (-1 🪙)
       </button>
-    </div>
 
-    <div class="fusion-card">
-      <div class="fusion-text">
-        <strong>الدمج التلقائي مفعّل ⚡</strong>
-        <span>أي كلب تقوم بإسقاطه سيندمج تلقائياً مع الكلب المماثل له فوراً!</span>
+      <!-- المفتاح الذكي للدمج التلقائي -->
+      <div class="fusion-card">
+        <div class="fusion-info">
+          <span class="fusion-title">الدمج التلقائي الأوتوماتيكي ⚡</span>
+          <span class="fusion-sub" id="auto-merge-status-text">غير مفعّل (دمج يدوي بالسحب)</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="auto-merge-toggle" onchange="toggleAutoMerge(this.checked)">
+          <span class="slider"></span>
+        </label>
       </div>
     </div>
   </div>
@@ -499,6 +540,8 @@
 
     let unlockedSlots = parseInt(localStorage.getItem('p_unlockedSlots')) || 10;
     let grid = JSON.parse(localStorage.getItem('p_grid')) || [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let autoMergeEnabled = localStorage.getItem('p_autoMerge') === 'true';
+    
     let selectedSlot = null;
     let refCount = parseInt(localStorage.getItem('p_refCount')) || 0;
 
@@ -515,7 +558,7 @@
       const t = document.getElementById('toast');
       t.innerText = msg;
       t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 2600);
+      setTimeout(() => { t.style.display = 'none'; }, 2400);
     }
 
     function switchTab(tabId, el) {
@@ -594,9 +637,32 @@
       document.getElementById('coin-balance').innerText = coins.toFixed(2);
       document.getElementById('hourly-rate').innerText = `+${getTotalHourlyRate().toFixed(2)}/ساعة`;
 
+      // تحديث حالة المفتاح في الواجهة
+      const toggleElem = document.getElementById('auto-merge-toggle');
+      if (toggleElem) {
+        toggleElem.checked = autoMergeEnabled;
+      }
+      const statusText = document.getElementById('auto-merge-status-text');
+      if (statusText) {
+        statusText.innerText = autoMergeEnabled ? "مفعّل (دمج آلي متسلسل)" : "غير مفعّل (دمج يدوي بالسحب)";
+        statusText.style.color = autoMergeEnabled ? "var(--accent-green)" : "var(--text-muted)";
+      }
+
       localStorage.setItem('p_coins', coins);
       localStorage.setItem('p_unlockedSlots', unlockedSlots);
       localStorage.setItem('p_grid', JSON.stringify(grid));
+      localStorage.setItem('p_autoMerge', autoMergeEnabled);
+    }
+
+    function toggleAutoMerge(isChecked) {
+      autoMergeEnabled = isChecked;
+      if (autoMergeEnabled) {
+        showToast("⚡ تم تفعيل الدمج التلقائي!");
+        runAutoMerge(true);
+      } else {
+        showToast("✋ تم إيقاف الدمج التلقائي. (الوضع اليدوي)");
+      }
+      renderGrid();
     }
 
     function buyUnlockSlot(slotIndex, cost) {
@@ -624,8 +690,10 @@
       } else if (targetLvl === srcLvl) {
         grid[toIdx] = srcLvl + 1;
         grid[fromIdx] = 0;
-        showToast(`🎉 تم الدمج! كلب جديد من المستوى ${srcLvl + 1}`);
-        autoMerge(true); // دمج تلقائي متسلسل إذا نتج كلب مطابق لكلب آخر
+        showToast(`🎉 تم الدمج! كلب من المستوى ${srcLvl + 1}`);
+        if (autoMergeEnabled) {
+          runAutoMerge(true);
+        }
       } else {
         grid[fromIdx] = targetLvl;
         grid[toIdx] = srcLvl;
@@ -695,12 +763,11 @@
       touchDragSource = null;
     }
 
-    // دالة الدمج التلقائي المتسلسل (Cascading Auto-Merge)
-    function autoMerge(isSilent = false) {
+    // دالة تنفيذ الدمج التلقائي
+    function runAutoMerge(isSilent = false) {
       let mergedTotal = 0;
       let hasChanges = true;
 
-      // حلقة تكرارية لضمان دمج جميع المستويات المتتالية تلقائياً
       while (hasChanges) {
         hasChanges = false;
         for (let i = 0; i < unlockedSlots; i++) {
@@ -718,16 +785,13 @@
         }
       }
 
-      if (mergedTotal > 0) {
-        showToast(`⚡ دمج تلقائي متسلسل (${mergedTotal}+)`);
-      } else if (!isSilent) {
-        showToast("ℹ️ لا توجد كلاب متطابقة للدمج حالياً.");
+      if (mergedTotal > 0 && !isSilent) {
+        showToast(`⚡ تم دمج ${mergedTotal} أطقم تلقائياً!`);
       }
-
       renderGrid();
     }
 
-    // إسقاط الكلب مع تفعيل الدمج اللحظي المباشر
+    // دالة إسقاط كلب جديد
     function dropDog() {
       let emptyIdx = -1;
       for (let i = 0; i < unlockedSlots; i++) {
@@ -746,8 +810,12 @@
         coins -= 1.0;
         grid[emptyIdx] = 1;
         
-        // استدعاء الدمج التلقائي المباشر فور إسقاط الكلب
-        autoMerge(true);
+        // إفراغ الخانة وإذا كان الدمج التلقائي مفعلاً يتم الدمج فوراً
+        if (autoMergeEnabled) {
+          runAutoMerge(true);
+        } else {
+          renderGrid();
+        }
       } else {
         showToast("❌ رصيدك غير كافٍ لشراء كلب (تحتاج 1 عملة).");
       }
