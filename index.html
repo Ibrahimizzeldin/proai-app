@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PROAI Mining & Earn</title>
+  <title>PROAI - Dog Merge Game</title>
 
   <!-- Telegram Web App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <!-- Adsgram SDK -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
   <!-- TON Connect UI SDK -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
@@ -18,7 +16,8 @@
     :root {
       --bg-color: #0f172a;
       --card-bg: #1e293b;
-      --accent-color: #38bdf8;
+      --accent-color: #f59e0b;
+      --accent-hover: #d97706;
       --text-color: #f8fafc;
       --text-muted: #94a3b8;
       --green-color: #22c55e;
@@ -29,6 +28,7 @@
       margin: 0;
       padding: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      user-select: none;
     }
 
     body {
@@ -39,42 +39,143 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      align-items: center;
     }
 
-    /* Top Bar Balances */
-    .header-balances {
+    /* Header Balances */
+    .header-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(30, 41, 59, 0.9);
+      border-radius: 16px;
+      padding: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      background: rgba(30, 41, 59, 0.8);
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      margin-bottom: 16px;
     }
 
-    .balance-item {
+    .balance-box {
       display: flex;
       flex-direction: column;
-      align-items: center;
     }
 
-    .balance-label {
-      font-size: 14px;
+    .balance-title {
+      font-size: 13px;
       color: var(--text-muted);
-      margin-bottom: 4px;
     }
 
-    .balance-val-gram {
-      font-size: 18px;
-      font-weight: bold;
-      color: var(--green-color);
-    }
-
-    .balance-val-proai {
-      font-size: 18px;
+    .balance-amount {
+      font-size: 20px;
       font-weight: bold;
       color: var(--accent-color);
+    }
+
+    .income-amount {
+      font-size: 14px;
+      color: var(--green-color);
+      font-weight: bold;
+    }
+
+    /* Tabs Container */
+    .tab-content {
+      display: none;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Grid Area */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .grid-slot {
+      aspect-ratio: 1;
+      background-color: var(--card-bg);
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .grid-slot.selected {
+      border-color: var(--accent-color);
+      background-color: rgba(245, 158, 11, 0.15);
+      transform: scale(1.03);
+    }
+
+    .dog-icon {
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .dog-level {
+      position: absolute;
+      bottom: 6px;
+      background: var(--accent-color);
+      color: #000;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* Actions & Controls */
+    .controls-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s, background-color 0.2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-buy {
+      background-color: var(--accent-color);
+      color: #000;
+    }
+
+    .btn-ad {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: #fff;
+    }
+
+    .btn:disabled {
+      background: #475569;
+      color: #94a3b8;
+      cursor: not-allowed;
     }
 
     /* Cards */
@@ -90,54 +191,16 @@
     .card-title {
       font-size: 18px;
       font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 14px;
       margin-bottom: 16px;
     }
 
-    .card-info {
-      margin-bottom: 12px;
-      color: var(--text-muted);
-      font-size: 15px;
-    }
-
-    .card-info span {
-      color: var(--text-color);
-      font-weight: bold;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background-color: var(--accent-color);
-      color: #0f172a;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      margin-top: 8px;
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .btn:disabled {
-      background-color: #475569;
-      color: #94a3b8;
-      cursor: not-allowed;
-    }
-
-    /* Tab Content */
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    /* Bottom Navigation Bar */
+    /* Bottom Nav */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -153,8 +216,8 @@
 
     .nav-item {
       color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 13px;
+      font-weight: bold;
       cursor: pointer;
       padding: 6px 12px;
       border-radius: 8px;
@@ -162,188 +225,295 @@
 
     .nav-item.active {
       color: var(--accent-color);
-      font-weight: bold;
     }
 
-    /* Toast Notification */
+    /* Toast */
     .toast {
       position: fixed;
       top: 20px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--accent-color);
-      color: #0f172a;
+      color: #000;
       padding: 10px 20px;
       border-radius: 20px;
       font-weight: bold;
       display: none;
       z-index: 1000;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar Balances -->
-  <div class="header-balances">
-    <div class="balance-item">
-      <span class="balance-label">رصيد GRAM</span>
-      <span class="balance-val-gram" id="gram-balance">0.000</span>
+  <!-- Top Balance Header -->
+  <div class="header-card">
+    <div class="balance-box">
+      <span class="balance-title">الذهب 🪙</span>
+      <span class="balance-amount" id="coin-balance">0</span>
     </div>
-    <div class="balance-item">
-      <span class="balance-label">رصيد PROAI</span>
-      <span class="balance-val-proai" id="proai-balance">0.00</span>
-    </div>
-  </div>
-
-  <!-- Tab 1: Mining -->
-  <div id="tab-mining" class="tab-content active">
-    <div class="card">
-      <div class="card-title">عداد التعدين السحابي ⚡</div>
-      <div class="card-info">سرعة التعدين: <span id="mining-rate">10</span> PROAI/ساعة</div>
-      <div class="card-info">ساعات التشغيل المتبقية: <span id="hours-remaining">0</span> ساعة</div>
-      <button class="btn" id="btn-claim" onclick="claimEarnings()">جمع الأرباح ⛏️</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">ترقية سرعة التعدين 🚀</div>
-      <div class="card-info">زيادة الإنتاج بـ <span>+15 PROAI/ساعة</span></div>
-      <div class="card-info">التكلفة: <span>100 PROAI</span></div>
-      <button class="btn" onclick="upgradeSpeed()">ترقية الآن</button>
+    <div class="balance-box" style="text-align: left;">
+      <span class="balance-title">الأرباح التلقائية ⚡</span>
+      <span class="income-amount" id="sec-income">+0/ثانية</span>
     </div>
   </div>
 
-  <!-- Tab 2: Ads -->
-  <div id="tab-ads" class="tab-content">
-    <div class="card">
-      <div class="card-title">شحن ساعات التعدين 🎬</div>
-      <div class="card-info">شاهد إعلاناً قصيراً للحصول على <span>+4 ساعات تعدين</span> مجاناً!</div>
-      <button class="btn" id="btn-watch-ad" onclick="showAd()">مشاهدة إعلان 📺</button>
+  <!-- TAB 1: GAME (DOG MERGE) -->
+  <div id="tab-game" class="tab-content active">
+    <!-- Grid Slots -->
+    <div class="grid-container" id="grid">
+      <!-- 9 Slots dynamically created -->
+    </div>
+
+    <!-- Actions -->
+    <div class="controls-container">
+      <button class="btn btn-buy" onclick="buyDog()">
+        شراء كلب 🐶 (<span id="buy-price">50</span> 🪙)
+      </button>
+      <button class="btn btn-ad" onclick="watchAdForCoins()">
+        مكافأة إعلانية 🎬 (+500 🪙)
+      </button>
     </div>
   </div>
 
-  <!-- Tab 3: Wallet -->
+  <!-- TAB 2: REWARDS / ADS -->
+  <div id="tab-rewards" class="tab-content">
+    <div class="card">
+      <div class="card-title">مركز المكافآت والإعلانات 🎁</div>
+      <div class="card-desc">شاهد الإعلانات لدعم اللعبة والحصول على ذهب مضاعف لشراء كلاب نادرة!</div>
+      <button class="btn btn-ad" id="btn-reward-ad" onclick="watchAdForDog()">
+        مشاهدة إعلان والحصول على كلب نادِر 🐕
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB 3: WALLET -->
   <div id="tab-wallet" class="tab-content">
     <div class="card">
-      <div class="card-title">المحفظة والسحب 💎</div>
-      <div class="card-info">قم بربط محفظتك السحابية (Tonkeeper) لسحب الأرباح وشحن الرصيد.</div>
+      <div class="card-title">المحفظة السحابية 💎</div>
+      <div class="card-desc">قم بربط محفظتك على شبكة TON لسحب المكافآت الحقيقية مستقبلاً.</div>
       <div id="ton-connect-btn" style="display: flex; justify-content: center; margin-top: 15px;"></div>
     </div>
   </div>
 
-  <!-- Bottom Nav -->
+  <!-- Bottom Navigation Bar -->
   <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchTab('tab-mining', this)">التعدين</div>
-    <div class="nav-item" onclick="switchTab('tab-ads', this)">الإعلانات</div>
-    <div class="nav-item" onclick="switchTab('tab-wallet', this)">المحفظة والسحب</div>
+    <div class="nav-item active" onclick="switchTab('tab-game', this)">الدمج 🎮</div>
+    <div class="nav-item" onclick="switchTab('tab-rewards', this)">المكافآت 🎁</div>
+    <div class="nav-item" onclick="switchTab('tab-wallet', this)">المحفظة 💎</div>
   </div>
 
-  <!-- Notification Popup -->
   <div id="toast" class="toast"></div>
 
   <script>
-    // Initialize Telegram WebApp
+    // Telegram WebApp Setup
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.expand();
       tg.ready();
     }
 
-    // App State Variables
-    let proaiBalance = parseFloat(localStorage.getItem('proaiBalance')) || 0.00;
-    let gramBalance = parseFloat(localStorage.getItem('gramBalance')) || 0.000;
-    let miningRate = parseInt(localStorage.getItem('miningRate')) || 10;
-    let hoursRemaining = parseInt(localStorage.getItem('hoursRemaining')) || 0;
+    // Dog Types & Incomes
+    const DOG_DATA = {
+      1: { name: "جرو صغير", icon: "🐶", income: 1 },
+      2: { name: "كلب عادي", icon: "🐕", income: 3 },
+      3: { name: "كلب حراسة", icon: "🦮", income: 8 },
+      4: { name: "كلب بوليسي", icon: "🐕‍🦺", income: 20 },
+      5: { name: "كلب بيتبول", icon: "🐩", income: 50 },
+      6: { name: "ذئب صائد", icon: "🐺", income: 120 },
+      7: { name: "ثعلب ذهبي", icon: "🦊", income: 300 },
+      8: { name: "أسد الأسطورة", icon: "🦁", income: 800 }
+    };
 
-    // Adsgram Controller Setup
+    // Game State
+    let coins = parseInt(localStorage.getItem('dog_coins')) || 200;
+    let buyPrice = parseInt(localStorage.getItem('dog_buyPrice')) || 50;
+    let gridSlots = JSON.parse(localStorage.getItem('dog_grid')) || [1, 1, 0, 0, 0, 0, 0, 0, 0];
+    let selectedSlotIndex = null;
+
+    // Adsgram Controller
     const ADSGRAM_BLOCK_ID = "46894";
     let AdController = null;
-
     if (window.Adsgram) {
       AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
     }
 
-    function updateUI() {
-      document.getElementById('proai-balance').innerText = proaiBalance.toFixed(2);
-      document.getElementById('gram-balance').innerText = gramBalance.toFixed(3);
-      document.getElementById('mining-rate').innerText = miningRate;
-      document.getElementById('hours-remaining').innerText = hoursRemaining;
-
-      localStorage.setItem('proaiBalance', proaiBalance);
-      localStorage.setItem('gramBalance', gramBalance);
-      localStorage.setItem('miningRate', miningRate);
-      localStorage.setItem('hoursRemaining', hoursRemaining);
-    }
-
-    function showToast(message) {
+    // Toast Notification
+    function showToast(msg) {
       const toast = document.getElementById('toast');
-      toast.innerText = message;
+      toast.innerText = msg;
       toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+      setTimeout(() => { toast.style.display = 'none'; }, 2800);
     }
 
-    function switchTab(tabId, element) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      
+    // Tab Switching
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
-      element.classList.add('active');
+      el.classList.add('active');
     }
 
-    function claimEarnings() {
-      if (hoursRemaining <= 0) {
-        showToast("⚠️ التعدين متوقف! انتقل لتبويب الإعلانات لشحن الساعات.");
-        return;
-      }
-      const earned = miningRate * hoursRemaining;
-      proaiBalance += earned;
-      hoursRemaining = 0;
-      updateUI();
-      showToast(`🎉 تم جمع ${earned} PROAI بنجاح!`);
+    // Calculate Total Income/sec
+    function getIncomePerSec() {
+      let total = 0;
+      gridSlots.forEach(lvl => {
+        if (lvl > 0 && DOG_DATA[lvl]) {
+          total += DOG_DATA[lvl].income;
+        }
+      });
+      return total;
     }
 
-    function upgradeSpeed() {
-      if (proaiBalance >= 100) {
-        proaiBalance -= 100;
-        miningRate += 15;
-        updateUI();
-        showToast("🚀 تم ترقية سرعة التعدين بنجاح!");
+    // Render Grid UI
+    function renderGrid() {
+      const gridContainer = document.getElementById('grid');
+      gridContainer.innerHTML = '';
+
+      gridSlots.forEach((level, idx) => {
+        const slot = document.createElement('div');
+        slot.className = `grid-slot ${selectedSlotIndex === idx ? 'selected' : ''}`;
+        slot.onclick = () => handleSlotClick(idx);
+
+        if (level > 0 && DOG_DATA[level]) {
+          slot.innerHTML = `
+            <div class="dog-icon">${DOG_DATA[level].icon}</div>
+            <div class="dog-level">مستوى ${level}</div>
+          `;
+        }
+
+        gridContainer.appendChild(slot);
+      });
+
+      // Update Header Text
+      document.getElementById('coin-balance').innerText = Math.floor(coins);
+      document.getElementById('sec-income').innerText = `+${getIncomePerSec()}/ثانية`;
+      document.getElementById('buy-price').innerText = buyPrice;
+
+      // Save Local Data
+      localStorage.setItem('dog_coins', coins);
+      localStorage.setItem('dog_buyPrice', buyPrice);
+      localStorage.setItem('dog_grid', JSON.stringify(gridSlots));
+    }
+
+    // Handle Slot Click (Merge or Select)
+    function handleSlotClick(index) {
+      if (selectedSlotIndex === null) {
+        // First selection (must be a dog slot)
+        if (gridSlots[index] > 0) {
+          selectedSlotIndex = index;
+        }
+      } else if (selectedSlotIndex === index) {
+        // Unselect if clicked again
+        selectedSlotIndex = null;
       } else {
-        showToast("❌ رصيدك غير كافٍ (تحتاج 100 PROAI).");
+        // Target slot
+        const sourceLvl = gridSlots[selectedSlotIndex];
+        const targetLvl = gridSlots[index];
+
+        if (targetLvl === 0) {
+          // Move dog to empty slot
+          gridSlots[index] = sourceLvl;
+          gridSlots[selectedSlotIndex] = 0;
+          selectedSlotIndex = null;
+        } else if (targetLvl === sourceLvl) {
+          // Merge two dogs!
+          const nextLevel = sourceLvl + 1;
+          if (DOG_DATA[nextLevel]) {
+            gridSlots[index] = nextLevel;
+            gridSlots[selectedSlotIndex] = 0;
+            selectedSlotIndex = null;
+            showToast(`🎉 تم دمج الكلاب ونمت إلى مستوى ${nextLevel}!`);
+          } else {
+            showToast("🌟 لقد وصلت للحد الأقصى من مستويات الكلاب!");
+            selectedSlotIndex = null;
+          }
+        } else {
+          // Select the new slot instead
+          selectedSlotIndex = index;
+        }
       }
+      renderGrid();
     }
 
-    function showAd() {
-      if (!AdController) {
-        showToast("⚠️ جاري تحميل نظام الإعلانات، حاول بعد لحظات...");
+    // Buy Level 1 Dog
+    function buyDog() {
+      const emptyIdx = gridSlots.indexOf(0);
+      if (emptyIdx === -1) {
+        showToast("⚠️ لا توجد خانات فارغة! قم بدمج الكلاب أولاً.");
         return;
       }
 
-      const btn = document.getElementById('btn-watch-ad');
-      btn.disabled = true;
+      if (coins >= buyPrice) {
+        coins -= buyPrice;
+        gridSlots[emptyIdx] = 1; // Add Level 1 Dog
+        buyPrice = Math.floor(buyPrice * 1.3); // Increase cost
+        renderGrid();
+        showToast("🐶 تم شراء كلب جديد بنجاح!");
+      } else {
+        showToast("❌ رصيدك من الذهب غير كافٍ!");
+      }
+    }
 
-      AdController.show().then((result) => {
-        hoursRemaining += 4;
-        updateUI();
-        showToast("✅ تم مشاهدة الإعلان! أضيفت +4 ساعات تعدين.");
-        btn.disabled = false;
-      }).catch((result) => {
-        showToast("⚠️ لم تتم مشاهدة الإعلان كاملاً.");
-        btn.disabled = false;
+    // Watch Ad for 500 Coins
+    function watchAdForCoins() {
+      if (!AdController) {
+        showToast("⚠️ جاري تهيئة الإعلانات، حاول مجدداً...");
+        return;
+      }
+
+      AdController.show().then(() => {
+        coins += 500;
+        renderGrid();
+        showToast("🎁 تم مشاهدة الإعلان! أضيفت +500 قطعة ذهبية.");
+      }).catch(() => {
+        showToast("⚠️ لم تكتمل مشاهدة الإعلان.");
       });
     }
 
-    // Initialize TON Connect UI
+    // Watch Ad for Free Dog
+    function watchAdForDog() {
+      const emptyIdx = gridSlots.indexOf(0);
+      if (emptyIdx === -1) {
+        showToast("⚠️ لا توجد خانة فارغة للحصول على الكلب!");
+        return;
+      }
+
+      if (!AdController) {
+        showToast("⚠️ جاري تهيئة الإعلانات، حاول مجدداً...");
+        return;
+      }
+
+      AdController.show().then(() => {
+        gridSlots[emptyIdx] = 2; // Level 2 dog reward
+        renderGrid();
+        showToast("🎁 رائع! حصلت على كلب من المستوى 2 مجاناً!");
+      }).catch(() => {
+        showToast("⚠️ لم تكتمل مشاهدة الإعلان.");
+      });
+    }
+
+    // Game Loop (Coins Generation Every Second)
+    setInterval(() => {
+      const inc = getIncomePerSec();
+      if (inc > 0) {
+        coins += inc;
+        document.getElementById('coin-balance').innerText = Math.floor(coins);
+        localStorage.setItem('dog_coins', coins);
+      }
+    }, 1000);
+
+    // Initialize TonConnect UI
     if (window.TON_CONNECT_UI) {
-      const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://Ibrahimizzeldin.github.io/proai-app/tonconnect-manifest.json',
         buttonRootId: 'ton-connect-btn'
       });
     }
 
-    // First load execution
-    updateUI();
+    // First Load
+    renderGrid();
   </script>
 </body>
 </html>
