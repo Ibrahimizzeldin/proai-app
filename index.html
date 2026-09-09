@@ -47,7 +47,6 @@
       overflow-x: hidden;
     }
 
-    /* Header */
     .app-header {
       width: 100%;
       max-width: 420px;
@@ -65,7 +64,6 @@
       text-transform: uppercase;
     }
 
-    /* Stats Cards */
     .stats-row {
       width: 100%;
       max-width: 420px;
@@ -101,7 +99,6 @@
       color: var(--accent-green);
     }
 
-    /* Tab Contents */
     .tab-content {
       display: none;
       width: 100%;
@@ -112,7 +109,6 @@
       display: block;
     }
 
-    /* Game Grid */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -227,7 +223,6 @@
       box-shadow: 0 12px 28px rgba(0,0,0,0.8);
     }
 
-    /* Controls */
     .action-controls {
       display: grid;
       grid-template-columns: 1fr 2fr;
@@ -392,12 +387,10 @@
 </head>
 <body>
 
-  <!-- App Header -->
   <div class="app-header">
     <div class="app-title">PROAI DOG MERGE 🐶</div>
   </div>
 
-  <!-- Stats Header -->
   <div class="stats-row">
     <div class="stat-card">
       <span class="stat-label">الرصيد الكلي 🪙</span>
@@ -414,8 +407,8 @@
     <div class="grid-container" id="grid"></div>
 
     <div class="action-controls">
-      <button class="btn-auto" onclick="autoMerge()">
-        <span>دمج تلقائي ⚡</span>
+      <button class="btn-auto" onclick="autoMerge(false)">
+        <span>دمج يدوياً ⚡</span>
       </button>
       <button class="btn-drop" onclick="dropDog()">
         إسقاط كلب (-1 🪙)
@@ -424,8 +417,8 @@
 
     <div class="fusion-card">
       <div class="fusion-text">
-        <strong>طريقة اللعب 🐕</strong>
-        <span>اسحب الكلب وأفلته فوق كلب من نفس المستوى لدمجهما ورفع الأرباح!</span>
+        <strong>الدمج التلقائي مفعّل ⚡</strong>
+        <span>أي كلب تقوم بإسقاطه سيندمج تلقائياً مع الكلب المماثل له فوراً!</span>
       </div>
     </div>
   </div>
@@ -469,7 +462,6 @@
     </div>
   </div>
 
-  <!-- Bottom Nav -->
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchTab('tab-merge', this)">
       <span class="nav-icon">🎮</span>
@@ -492,7 +484,6 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    // Telegram Web App Setup
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.expand();
@@ -501,7 +492,6 @@
 
     const DOG_EMOJIS = ['🐶', '🐕', '🦮', '🐕‍🦺', '🐩', '🐺', '🦊', '🦁', '🐯', '🐅', '🐆', '🐉', '🐲', '🦄', '🦅'];
 
-    // State Variables Initialization
     let coins = parseFloat(localStorage.getItem('p_coins'));
     if (isNaN(coins) || coins === null) {
       coins = 100.00;
@@ -515,7 +505,6 @@
     let touchDragSource = null;
     let ghostElem = null;
 
-    // Adsgram Setup
     const ADSGRAM_BLOCK_ID = "46894";
     let AdController = null;
     if (window.Adsgram) {
@@ -540,9 +529,6 @@
       return (slotIndex - 9) * 15;
     }
 
-    // FORMULA FIX:
-    // Level 1 = 100 coins/hr
-    // Multiplier = 2.10 per level. Merging two LVL N (2x Rate) gives LVL N+1 (2.1x Rate = +5% Net Gain).
     function getDogRate(lvl) {
       if (!lvl || lvl <= 0) return 0;
       return 100 * Math.pow(2.10, lvl - 1);
@@ -639,6 +625,7 @@
         grid[toIdx] = srcLvl + 1;
         grid[fromIdx] = 0;
         showToast(`🎉 تم الدمج! كلب جديد من المستوى ${srcLvl + 1}`);
+        autoMerge(true); // دمج تلقائي متسلسل إذا نتج كلب مطابق لكلب آخر
       } else {
         grid[fromIdx] = targetLvl;
         grid[toIdx] = srcLvl;
@@ -708,6 +695,39 @@
       touchDragSource = null;
     }
 
+    // دالة الدمج التلقائي المتسلسل (Cascading Auto-Merge)
+    function autoMerge(isSilent = false) {
+      let mergedTotal = 0;
+      let hasChanges = true;
+
+      // حلقة تكرارية لضمان دمج جميع المستويات المتتالية تلقائياً
+      while (hasChanges) {
+        hasChanges = false;
+        for (let i = 0; i < unlockedSlots; i++) {
+          if (grid[i] === 0) continue;
+          for (let j = i + 1; j < unlockedSlots; j++) {
+            if (grid[i] > 0 && grid[i] === grid[j]) {
+              grid[i] = grid[i] + 1;
+              grid[j] = 0;
+              mergedTotal++;
+              hasChanges = true;
+              break;
+            }
+          }
+          if (hasChanges) break;
+        }
+      }
+
+      if (mergedTotal > 0) {
+        showToast(`⚡ دمج تلقائي متسلسل (${mergedTotal}+)`);
+      } else if (!isSilent) {
+        showToast("ℹ️ لا توجد كلاب متطابقة للدمج حالياً.");
+      }
+
+      renderGrid();
+    }
+
+    // إسقاط الكلب مع تفعيل الدمج اللحظي المباشر
     function dropDog() {
       let emptyIdx = -1;
       for (let i = 0; i < unlockedSlots; i++) {
@@ -718,41 +738,21 @@
       }
 
       if (emptyIdx === -1) {
-        showToast("⚠️ الخانات المفتوحة ممتلئة! ادمج الكلاب أو افتح خانات جديدة.");
+        showToast("⚠️ الخانات المفتوحة ممتلئة! افتح خانات جديدة.");
         return;
       }
 
       if (coins >= 1.0) {
         coins -= 1.0;
         grid[emptyIdx] = 1;
-        renderGrid();
+        
+        // استدعاء الدمج التلقائي المباشر فور إسقاط الكلب
+        autoMerge(true);
       } else {
         showToast("❌ رصيدك غير كافٍ لشراء كلب (تحتاج 1 عملة).");
       }
     }
 
-    function autoMerge() {
-      let mergedCount = 0;
-      for (let i = 0; i < unlockedSlots; i++) {
-        if (grid[i] === 0) continue;
-        for (let j = i + 1; j < unlockedSlots; j++) {
-          if (grid[i] > 0 && grid[i] === grid[j]) {
-            grid[i] = grid[i] + 1;
-            grid[j] = 0;
-            mergedCount++;
-            break;
-          }
-        }
-      }
-      if (mergedCount > 0) {
-        showToast(`⚡ تم الدمج التلقائي لـ ${mergedCount} كلاب!`);
-      } else {
-        showToast("ℹ️ لا توجد كلاب متطابقة للدمج حالياً.");
-      }
-      renderGrid();
-    }
-
-    // Passive Mining Loop
     setInterval(() => {
       const hourlyRate = getTotalHourlyRate();
       if (hourlyRate > 0) {
@@ -763,7 +763,6 @@
       }
     }, 1000);
 
-    // Adsgram Reward Logic
     function watchAdsgramAd() {
       if (!AdController) {
         showToast("⚠️ جاري تهيئة سكريبت الإعلانات...");
@@ -778,7 +777,6 @@
       });
     }
 
-    // Daily Claim Logic
     function claimDailyReward() {
       const lastClaim = localStorage.getItem('p_lastClaim');
       const now = new Date().toDateString();
@@ -792,7 +790,6 @@
       }
     }
 
-    // Referral Link
     const userTelegramId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "12345678";
     const refLink = `https://t.me/ProAiMining2026_bot?start=ref_${userTelegramId}`;
     document.getElementById('ref-link').innerText = refLink;
@@ -803,7 +800,6 @@
       showToast("📋 تم نسخ رابط الإحالة بنجاح!");
     }
 
-    // TON Connect Initialization
     if (window.TON_CONNECT_UI) {
       new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://Ibrahimizzeldin.github.io/proai-app/tonconnect-manifest.json',
@@ -811,7 +807,6 @@
       });
     }
 
-    // First Render
     renderGrid();
   </script>
 </body>
