@@ -112,7 +112,7 @@
       display: block;
     }
 
-    /* Distinct & Stylized Grid Container */
+    /* Grid Container */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -127,7 +127,7 @@
       position: relative;
     }
 
-    /* Stylized Separated Slots */
+    /* Separated Slots */
     .grid-slot {
       aspect-ratio: 1;
       background: linear-gradient(145deg, #1a2233, #121724);
@@ -144,7 +144,6 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
     }
 
-    /* Active Dog Slot Highlight */
     .grid-slot.has-dog {
       background: linear-gradient(145deg, #25334d, #182236);
       border-color: rgba(59, 130, 246, 0.6);
@@ -158,7 +157,6 @@
       background: linear-gradient(145deg, #3a2e1d, #241c10) !important;
     }
 
-    /* Locked Slot Visual Contrast */
     .grid-slot.locked {
       background: linear-gradient(145deg, #0e121a, #090c12);
       border: 1px dashed #242e3d;
@@ -212,7 +210,6 @@
       pointer-events: none;
     }
 
-    /* Floating Ghost Element for Touch Drag */
     .drag-ghost {
       position: fixed;
       pointer-events: none;
@@ -275,7 +272,6 @@
       transform: scale(0.97);
     }
 
-    /* Fusion Info Banner */
     .fusion-card {
       width: 100%;
       background: var(--card-bg);
@@ -298,7 +294,6 @@
       font-size: 13px;
     }
 
-    /* Cards Layout */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -347,7 +342,6 @@
       color: var(--accent-gold-light);
     }
 
-    /* Bottom Navigation Bar */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -380,7 +374,6 @@
       font-size: 18px;
     }
 
-    /* Toast Notification */
     .toast {
       position: fixed;
       top: 20px;
@@ -417,12 +410,10 @@
     </div>
   </div>
 
-  <!-- TAB 1: MERGE GAME (الدمج) -->
+  <!-- TAB 1: MERGE GAME -->
   <div id="tab-merge" class="tab-content active">
-    <!-- Grid Area (5x4 = 20 Slots) -->
     <div class="grid-container" id="grid"></div>
 
-    <!-- Actions -->
     <div class="action-controls">
       <button class="btn-auto" onclick="autoMerge()">
         <span>دمج تلقائي ⚡</span>
@@ -432,20 +423,19 @@
       </button>
     </div>
 
-    <!-- Status Banner -->
     <div class="fusion-card">
       <div class="fusion-text">
         <strong>طريقة اللعب 🐕</strong>
-        <span>اسحب الكلب وأفلته فوق كلب من نفس المستوى لدمجهما!</span>
+        <span>اسحب الكلب وأفلته فوق كلب من نفس المستوى لدمجهما ورفع الأرباح!</span>
       </div>
     </div>
   </div>
 
-  <!-- TAB 2: TASKS / ADS (المهام والإعلانات) -->
+  <!-- TAB 2: TASKS -->
   <div id="tab-tasks" class="tab-content">
     <div class="card">
       <div class="card-title">إعلان مكافأة مجاني 🎬</div>
-      <div class="card-desc">شاهد إعلاناً قصيراً للحصول على <b>+50 عملة مجانية</b> لشراء وتوسيع خريطتك!</div>
+      <div class="card-desc">شاهد إعلاناً قصيراً للحصول على <b>+50 عملة مجانية</b>!</div>
       <button class="btn-task" onclick="watchAdsgramAd()">مشاهدة الإعلان 📺</button>
     </div>
 
@@ -456,11 +446,11 @@
     </div>
   </div>
 
-  <!-- TAB 3: REFERRAL (دعوة الأصدقاء) -->
+  <!-- TAB 3: REFERRAL -->
   <div id="tab-ref" class="tab-content">
     <div class="card">
       <div class="card-title">دعوة الأصدقاء 👥</div>
-      <div class="card-desc">احصل على <b>+25 عملة</b> فوراً عن كل صديق تقوم بدعوته للعبة عبر رابطك!</div>
+      <div class="card-desc">احصل على <b>+25 عملة</b> فوراً عن كل صديق يدخل اللعبة عبر رابطك!</div>
       <div class="ref-link-box" id="ref-link">جاري تحميل الرابط...</div>
       <button class="btn-task" style="background:#f59e0b; color:#000;" onclick="copyRefLink()">نسخ رابط الدعوة 📋</button>
     </div>
@@ -471,16 +461,16 @@
     </div>
   </div>
 
-  <!-- TAB 4: WALLET (المحفظة) -->
+  <!-- TAB 4: WALLET -->
   <div id="tab-wallet" class="tab-content">
     <div class="card">
       <div class="card-title">ربط المحفظة 💎</div>
-      <div class="card-desc">اربط محفظة TON الخاصة بك لاستلام السحوبات والأرباح مستقبلاً.</div>
+      <div class="card-desc">اربط محفظة TON الخاصة بك لاستلام السحوبات مستقبلاً.</div>
       <div id="ton-connect-btn" style="display:flex; justify-content:center; margin-top:10px;"></div>
     </div>
   </div>
 
-  <!-- Bottom Navigation Bar -->
+  <!-- Bottom Nav -->
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchTab('tab-merge', this)">
       <span class="nav-icon">🎮</span>
@@ -500,24 +490,20 @@
     </div>
   </div>
 
-  <!-- Toast Notification -->
   <div id="toast" class="toast"></div>
 
   <script>
-    // Initialize Telegram WebApp SDK
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.expand();
       tg.ready();
     }
 
-    // Dynamic Emojis for Infinite Levels
     const DOG_EMOJIS = ['🐶', '🐕', '🦮', '🐕‍🦺', '🐩', '🐺', '🦊', '🦁', '🐯', '🐅', '🐆', '🐉', '🐲', '🦄', '🦅'];
 
-    // Local State Management
     let coins = parseFloat(localStorage.getItem('p_coins'));
     if (isNaN(coins) || coins === null) {
-      coins = 100.00; // 100 starting coins for new users
+      coins = 100.00;
     }
 
     let unlockedSlots = parseInt(localStorage.getItem('p_unlockedSlots')) || 10;
@@ -525,11 +511,9 @@
     let selectedSlot = null;
     let refCount = parseInt(localStorage.getItem('p_refCount')) || 0;
 
-    // Custom Mobile Touch Drag State Engine
     let touchDragSource = null;
     let ghostElem = null;
 
-    // Adsgram Setup (Restricted ONLY to Tasks Tab)
     const ADSGRAM_BLOCK_ID = "46894";
     let AdController = null;
     if (window.Adsgram) {
@@ -550,17 +534,16 @@
       el.classList.add('active');
     }
 
-    // Unlock Slot Price Formula
     function getSlotUnlockCost(slotIndex) {
       return (slotIndex - 9) * 15;
     }
 
-    // UPDATED MINING FORMULA:
-    // Level 1 = 100 coins/hr
-    // Each higher level increases by 10% compounding
+    // FORMULA FIX:
+    // Base Level 1 = 100 coins/hr
+    // Compounding Multiplier = 2.10 per level (guarantees merge is always profitable)
     function getDogRate(lvl) {
       if (lvl <= 0) return 0;
-      return 100 * Math.pow(1.10, lvl - 1);
+      return 100 * Math.pow(2.10, lvl - 1);
     }
 
     function getTotalHourlyRate() {
@@ -573,7 +556,6 @@
       return total;
     }
 
-    // Render Grid with Explicit Visual Styling
     function renderGrid() {
       const gridContainer = document.getElementById('grid');
       gridContainer.innerHTML = '';
@@ -583,7 +565,6 @@
         slot.dataset.index = idx;
 
         if (idx < unlockedSlots) {
-          // Unlocked Slot Styling
           const hasDogClass = lvl > 0 ? 'has-dog' : '';
           const selectedClass = selectedSlot === idx ? 'selected' : '';
           slot.className = `grid-slot ${hasDogClass} ${selectedClass}`;
@@ -596,16 +577,12 @@
             `;
           }
 
-          // Click / Touch Fallbacks
           slot.onclick = () => handleSlotClick(idx);
-
-          // Mobile Touch Drag Engine
           slot.addEventListener('touchstart', (e) => handleTouchStart(e, idx), { passive: false });
           slot.addEventListener('touchmove', handleTouchMove, { passive: false });
           slot.addEventListener('touchend', (e) => handleTouchEnd(e, idx));
 
         } else {
-          // Locked Slot Styling
           const isNextLock = (idx === unlockedSlots);
           const cost = getSlotUnlockCost(idx);
           slot.className = `grid-slot locked ${isNextLock ? 'next-lock' : ''}`;
@@ -626,17 +603,14 @@
         gridContainer.appendChild(slot);
       });
 
-      // Update Top Display
       document.getElementById('coin-balance').innerText = coins.toFixed(2);
       document.getElementById('hourly-rate').innerText = `+${getTotalHourlyRate().toFixed(2)}/ساعة`;
 
-      // Save State
       localStorage.setItem('p_coins', coins);
       localStorage.setItem('p_unlockedSlots', unlockedSlots);
       localStorage.setItem('p_grid', JSON.stringify(grid));
     }
 
-    // Purchase Slot Handler
     function buyUnlockSlot(slotIndex, cost) {
       if (coins >= cost) {
         coins -= cost;
@@ -648,7 +622,6 @@
       }
     }
 
-    // Merge / Move Core Engine
     function executeMergeOrMove(fromIdx, toIdx) {
       if (fromIdx === null || fromIdx === toIdx || toIdx >= unlockedSlots) return;
 
@@ -673,7 +646,6 @@
       renderGrid();
     }
 
-    // Click Fallback
     function handleSlotClick(idx) {
       if (selectedSlot === null) {
         if (grid[idx] > 0) selectedSlot = idx;
@@ -686,7 +658,6 @@
       renderGrid();
     }
 
-    // Mobile Drag Engine
     function handleTouchStart(e, idx) {
       if (grid[idx] === 0) return;
       touchDragSource = idx;
@@ -735,7 +706,6 @@
       touchDragSource = null;
     }
 
-    // Drop Level 1 Dog (Fixed 1 Coin Cost)
     function dropDog() {
       let emptyIdx = -1;
       for (let i = 0; i < unlockedSlots; i++) {
@@ -759,7 +729,6 @@
       }
     }
 
-    // Auto Merge
     function autoMerge() {
       let mergedCount = 0;
       for (let i = 0; i < unlockedSlots; i++) {
@@ -781,7 +750,6 @@
       renderGrid();
     }
 
-    // Passive Mining Loop (Per Second Calculation)
     setInterval(() => {
       const hourlyRate = getTotalHourlyRate();
       if (hourlyRate > 0) {
@@ -792,7 +760,6 @@
       }
     }, 1000);
 
-    // Ads Controller (Tasks Tab Only)
     function watchAdsgramAd() {
       if (!AdController) {
         showToast("⚠️ جاري تهيئة سكريبت الإعلانات...");
@@ -820,7 +787,6 @@
       }
     }
 
-    // Referral System
     const userTelegramId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "12345678";
     const refLink = `https://t.me/ProAiMining2026_bot?start=ref_${userTelegramId}`;
     document.getElementById('ref-link').innerText = refLink;
@@ -831,7 +797,6 @@
       showToast("📋 تم نسخ رابط الإحالة بنجاح!");
     }
 
-    // TON Connect UI Integration
     if (window.TON_CONNECT_UI) {
       new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://Ibrahimizzeldin.github.io/proai-app/tonconnect-manifest.json',
@@ -839,7 +804,6 @@
       });
     }
 
-    // Initial Launch Render
     renderGrid();
   </script>
 </body>
