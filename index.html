@@ -446,8 +446,8 @@
     <div class="grid-container" id="grid"></div>
 
     <div class="action-controls">
-      <button class="btn-drop" onclick="dropDog()">
-        إسقاط كلب جديد (-1 🪙)
+      <button class="btn-drop" id="btn-drop-dog" onclick="dropDog()">
+        إسقاط كلب جديد (-1.00 🪙)
       </button>
 
       <!-- المفتاح الذكي للدمج التلقائي -->
@@ -587,6 +587,14 @@
       return total;
     }
 
+    // دالة حساب سعر الكلب المتغير ديناميكياً بناءً على معدل التعدين
+    function getDogDropPrice() {
+      const basePrice = 1.0;          // السعر المبدئي للكلب الأول
+      const timeFactor = 0.05;         // يعادل دخل 3 دقائق من معدل التعدين الكلي
+      const currentRate = getTotalHourlyRate();
+      return basePrice + (timeFactor * currentRate);
+    }
+
     function renderGrid() {
       const gridContainer = document.getElementById('grid');
       gridContainer.innerHTML = '';
@@ -634,10 +642,16 @@
         gridContainer.appendChild(slot);
       });
 
+      const currentDropPrice = getDogDropPrice();
       document.getElementById('coin-balance').innerText = coins.toFixed(2);
       document.getElementById('hourly-rate').innerText = `+${getTotalHourlyRate().toFixed(2)}/ساعة`;
+      
+      const dropBtn = document.getElementById('btn-drop-dog');
+      if (dropBtn) {
+        dropBtn.innerText = `إسقاط كلب جديد (-${currentDropPrice.toFixed(2)} 🪙)`;
+      }
 
-      // تحديث حالة المفتاح في الواجهة
+      // تحديث حالة مفتاح التحكم
       const toggleElem = document.getElementById('auto-merge-toggle');
       if (toggleElem) {
         toggleElem.checked = autoMergeEnabled;
@@ -763,7 +777,7 @@
       touchDragSource = null;
     }
 
-    // دالة تنفيذ الدمج التلقائي
+    // دالة تنفيذ الدمج التلقائي المتسلسل
     function runAutoMerge(isSilent = false) {
       let mergedTotal = 0;
       let hasChanges = true;
@@ -791,7 +805,7 @@
       renderGrid();
     }
 
-    // دالة إسقاط كلب جديد
+    // دالة إسقاط كلب جديد باستخدام السعر الديناميكي
     function dropDog() {
       let emptyIdx = -1;
       for (let i = 0; i < unlockedSlots; i++) {
@@ -806,18 +820,19 @@
         return;
       }
 
-      if (coins >= 1.0) {
-        coins -= 1.0;
+      const currentPrice = getDogDropPrice();
+
+      if (coins >= currentPrice) {
+        coins -= currentPrice;
         grid[emptyIdx] = 1;
         
-        // إفراغ الخانة وإذا كان الدمج التلقائي مفعلاً يتم الدمج فوراً
         if (autoMergeEnabled) {
           runAutoMerge(true);
         } else {
           renderGrid();
         }
       } else {
-        showToast("❌ رصيدك غير كافٍ لشراء كلب (تحتاج 1 عملة).");
+        showToast(`❌ رصيدك غير كافٍ! تحتاج إلى ${currentPrice.toFixed(2)} عملة.`);
       }
     }
 
