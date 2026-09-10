@@ -20,6 +20,7 @@
       --accent-gold: #f59e0b;
       --accent-gold-light: #fbbf24;
       --accent-green: #10b981;
+      --accent-red: #ef4444;
       --accent-blue: #3b82f6;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
@@ -57,11 +58,22 @@
     }
 
     .app-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 900;
       letter-spacing: 1px;
       color: var(--text-main);
       text-transform: uppercase;
+    }
+
+    .btn-reset {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
     }
 
     .stats-row {
@@ -252,7 +264,6 @@
       transform: scale(0.98);
     }
 
-    /* Toggle Switch Container */
     .fusion-card {
       width: 100%;
       background: var(--card-bg);
@@ -281,7 +292,6 @@
       margin-top: 2px;
     }
 
-    /* Switch Component */
     .switch {
       position: relative;
       display: inline-block;
@@ -428,6 +438,7 @@
 
   <div class="app-header">
     <div class="app-title">PROAI DOG MERGE 🐶</div>
+    <button class="btn-reset" onclick="resetGame()">إعادة تصفير 🔄</button>
   </div>
 
   <div class="stats-row">
@@ -450,7 +461,6 @@
         إسقاط كلب جديد (-1.00 🪙)
       </button>
 
-      <!-- المفتاح الذكي للدمج التلقائي -->
       <div class="fusion-card">
         <div class="fusion-info">
           <span class="fusion-title">الدمج التلقائي الأوتوماتيكي ⚡</span>
@@ -533,17 +543,18 @@
 
     const DOG_EMOJIS = ['🐶', '🐕', '🦮', '🐕‍🦺', '🐩', '🐺', '🦊', '🦁', '🐯', '🐅', '🐆', '🐉', '🐲', '🦄', '🦅'];
 
-    let coins = parseFloat(localStorage.getItem('p_coins'));
+    // استخدام مفاتيح حفظ جديدة (p_v2_) للبدء من جديد تلقائياً
+    let coins = parseFloat(localStorage.getItem('p_v2_coins'));
     if (isNaN(coins) || coins === null) {
       coins = 100.00;
     }
 
-    let unlockedSlots = parseInt(localStorage.getItem('p_unlockedSlots')) || 10;
-    let grid = JSON.parse(localStorage.getItem('p_grid')) || [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    let autoMergeEnabled = localStorage.getItem('p_autoMerge') === 'true';
+    let unlockedSlots = parseInt(localStorage.getItem('p_v2_unlockedSlots')) || 10;
+    let grid = JSON.parse(localStorage.getItem('p_v2_grid')) || [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let autoMergeEnabled = localStorage.getItem('p_v2_autoMerge') === 'true';
     
     let selectedSlot = null;
-    let refCount = parseInt(localStorage.getItem('p_refCount')) || 0;
+    let refCount = parseInt(localStorage.getItem('p_v2_refCount')) || 0;
 
     let touchDragSource = null;
     let ghostElem = null;
@@ -559,6 +570,14 @@
       t.innerText = msg;
       t.style.display = 'block';
       setTimeout(() => { t.style.display = 'none'; }, 2400);
+    }
+
+    // دالة التصفير الشاملة وإعادة التشغيل من البداية
+    function resetGame() {
+      if (confirm("هل أنت تأكد من إعادة تشغيل اللعبة وتصفير كل البيانات للبدء من جديد؟")) {
+        localStorage.clear();
+        location.reload();
+      }
     }
 
     function switchTab(tabId, el) {
@@ -587,10 +606,9 @@
       return total;
     }
 
-    // دالة حساب سعر الكلب المتغير ديناميكياً بناءً على معدل التعدين
     function getDogDropPrice() {
-      const basePrice = 1.0;          // السعر المبدئي للكلب الأول
-      const timeFactor = 0.05;         // يعادل دخل 3 دقائق من معدل التعدين الكلي
+      const basePrice = 1.0;
+      const timeFactor = 0.05;
       const currentRate = getTotalHourlyRate();
       return basePrice + (timeFactor * currentRate);
     }
@@ -651,7 +669,6 @@
         dropBtn.innerText = `إسقاط كلب جديد (-${currentDropPrice.toFixed(2)} 🪙)`;
       }
 
-      // تحديث حالة مفتاح التحكم
       const toggleElem = document.getElementById('auto-merge-toggle');
       if (toggleElem) {
         toggleElem.checked = autoMergeEnabled;
@@ -662,10 +679,10 @@
         statusText.style.color = autoMergeEnabled ? "var(--accent-green)" : "var(--text-muted)";
       }
 
-      localStorage.setItem('p_coins', coins);
-      localStorage.setItem('p_unlockedSlots', unlockedSlots);
-      localStorage.setItem('p_grid', JSON.stringify(grid));
-      localStorage.setItem('p_autoMerge', autoMergeEnabled);
+      localStorage.setItem('p_v2_coins', coins);
+      localStorage.setItem('p_v2_unlockedSlots', unlockedSlots);
+      localStorage.setItem('p_v2_grid', JSON.stringify(grid));
+      localStorage.setItem('p_v2_autoMerge', autoMergeEnabled);
     }
 
     function toggleAutoMerge(isChecked) {
@@ -777,7 +794,6 @@
       touchDragSource = null;
     }
 
-    // دالة تنفيذ الدمج التلقائي المتسلسل
     function runAutoMerge(isSilent = false) {
       let mergedTotal = 0;
       let hasChanges = true;
@@ -805,7 +821,6 @@
       renderGrid();
     }
 
-    // دالة إسقاط كلب جديد باستخدام السعر الديناميكي
     function dropDog() {
       let emptyIdx = -1;
       for (let i = 0; i < unlockedSlots; i++) {
@@ -842,7 +857,7 @@
         const perSecIncome = hourlyRate / 3600;
         coins += perSecIncome;
         document.getElementById('coin-balance').innerText = coins.toFixed(2);
-        localStorage.setItem('p_coins', coins);
+        localStorage.setItem('p_v2_coins', coins);
       }
     }, 1000);
 
@@ -861,13 +876,13 @@
     }
 
     function claimDailyReward() {
-      const lastClaim = localStorage.getItem('p_lastClaim');
+      const lastClaim = localStorage.getItem('p_v2_lastClaim');
       const now = new Date().toDateString();
       if (lastClaim === now) {
         showToast("⚠️ لقد استلمت مكافأة اليوم بالفعل!");
       } else {
         coins += 20;
-        localStorage.setItem('p_lastClaim', now);
+        localStorage.setItem('p_v2_lastClaim', now);
         renderGrid();
         showToast("🎁 تم استلام +20 عملة مكافأة يومية!");
       }
